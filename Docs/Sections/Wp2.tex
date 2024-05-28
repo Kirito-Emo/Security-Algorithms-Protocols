@@ -1,0 +1,126 @@
+\chapter{WORK PACKAGE 2}
+In questo capitolo concentreremo la nostra attenzione nel presentare una soluzione che risponde al modello identificato nel \textit{Work Package 1 (WP1)}. L’obiettivo è quello di proporre un sistema che riesca a raggiungere un ragionevole compromesso tra efficienza, trasparenza, confidenzialità e sicurezza.
+
+\noindent Concentreremo la nostra attenzione sui seguenti problemi chiave:
+    \begin{itemize}
+        \item Richiesta e ottenimento della CIE
+        
+        \item Richiesta e ottenimento delle credenziali necessarie per l'accesso ai servizi specifici
+        
+        \item Autenticazione e accesso ai servizi qualificati
+    
+        \item Protezione della privacy e dell'integrità delle credenziali
+    
+        \item Minimizzazione del coinvolgimento di terze parti fidate
+    \end{itemize}
+
+
+    \section{Panoramica Generale di Funzionamento}
+        Innanzitutto, a valle di una richiesta apposita, viene emessa una CIE con il PIN associato per ogni utente.
+        Ciascuno di essi, tramite l'utilizzo della CIE, può richiedere delle credenziali ad un'autorità di rilascio delle stesse.
+        Esistono varie autorità che rilasciano credenziali agli utenti e, una volta entratone in possesso, è possibile utilizzarle per identificarsi e accedere ai servizi qualificati.
+        È consentito, all’utente, l'accesso ai servizi qualificati solo se le credenziali soddisfano i requisiti di accesso imposti dal servizio stesso.
+
+
+    \section{Generazione e Utilizzo delle Credenziali}
+        In questa sezione verrà sviluppato un protocollo per la generazione e l'utilizzo di un sistema di identificazione tramite credenziali per l'accesso a servizi digitali qualificati.
+        Questo processo coinvolge i seguenti attori chiave: l'utente, l'autorità di rilascio delle credenziali e il server del servizio.
+        I partecipanti interagiscono con l'autorità per la richiesta e la generazione delle credenziali e con il server del servizio per usufruire dei servizi offerti.
+        Si inizierà descrivendo come un utente può richiedere una credenziale all'autorità, chiarendo anche il processo di rilascio telematico della stessa.
+        Successivamente, verrà delineato il contenuto e la struttura delle credenziali, affinché possano essere utilizzate come strumento digitale per l'identificazione e l'accesso ai servizi, mantenendo la massima riservatezza delle informazioni contenute.
+        Infine, analizzeremo il processo di identificazione e accesso a un servizio digitale.
+                
+        \subsection{Supposizioni}
+            Il funzionamento del protocollo proposto si basa sulle seguenti supposizioni:
+
+            \begin{itemize}
+                \item L'utente ha ottenuto la CIE e il PIN associato
+
+                \item L'autorità di rilascio è fidata, emette credenziali corrette e rispetta il protocollo descritto
+
+                \item Le informazioni necessarie alla verifica delle credenziali sono pubbliche, incluse gli algoritmi e i protocolli utilizzati
+
+                \item L'autorità di rilascio possiede certificati validi per firmare le credenziali e per la comunicazione TLS con l'utente
+            \end{itemize}
+
+    \noindent Si procede adesso con l’analisi dettagliata di quanto delineato fino a questo momento.
+
+
+    \section{Processo di Richiesta e Rilascio delle Credenziali}
+    
+        \subsection{Generazione di una coppia di chiavi}
+            \begin{itemize}
+                \item Ogni utente genera una coppia di chiavi pubblica/privata (se non l'ha già fatto durante la fase di registrazione della CIE)
+
+                \item Un utente genera la chiave pubblica $pk_{utente}$ in accordo all'algoritmo Gen(1$^n$)
+                
+                \item La chiave pubblica dell'utente è registrata presso le autorità competenti
+            \end{itemize}
+    
+        \subsection{Richiesta delle Credenziali}
+            \begin{itemize}
+                \item  L'utente firma digitalmente la richiesta di credenziali con la propria chiave privata
+                
+                \item L'autorità competente verifica la firma utilizzando la chiave pubblica registrata
+            \end{itemize}
+
+        \subsection{Emissione del token di credenziale}
+            \begin{itemize}
+                \item Il token di credenziale contiene un campo aggiuntivo per la chiave pubblica dell'utente
+                
+                \item L'autorità firma il token di credenziale includendo la chiave pubblica dell'utente
+            \end{itemize}
+
+
+    \section{Processo di Identificazione e Accesso ai Servizi}
+        Quando un utente presenta il token di credenziale per accedere a un servizio, il servizio deve verificare che l'utente possieda effettivamente la chiave privata corrispondente alla chiave pubblica inclusa nel token.
+
+        \subsection{Verifica del Token}
+            \begin{itemize}
+                \item Il servizio decodifica il token e verifica la firma digitale dell'autorità
+
+                \item Controlla che l'attributo del token corrisponda ai requisiti di accesso
+            \end{itemize}
+
+        \subsection{Autenticazione dell'Utente}
+            \begin{itemize}
+                \item Il servizio genera una sfida (\textit{challenge}) crittografica
+
+                \item L'utente deve firmare la sfida con la propria chiave privata
+
+                \item Il servizio verifica la firma utilizzando la chiave pubblica inclusa nel token
+            \end{itemize}
+    
+        \subsection{Accesso ai Servizi}
+            \begin{itemize}
+                \item Se le credenziali soddisfano i requisiti di accesso imposti dal servizio, l'utente ottiene l'accesso al servizio richiesto.
+                
+                \item Il server registra l'accesso dell'utente in modo sicuro e trasparente, mantenendo un log degli accessi per future verifiche.
+            \end{itemize}
+
+
+    \section{Minimizzazione del Coinvolgimento di Terze Parti Fidate}
+        Per minimizzare il coinvolgimento di terze parti fidate durante gli accessi ai servizi:
+    
+        \begin{itemize}
+            \item Le credenziali sono emesse una sola volta e non richiedono la verifica continua da parte delle autorità di rilascio durante ogni accesso
+        
+            \item I server dei servizi qualificati verificano autonomamente le credenziali utilizzando le informazioni pubbliche rese disponibili dalle autorità di rilascio
+        
+            \item L'utilizzo di firme digitali e connessioni TLS garantisce la sicurezza e l'integrità delle comunicazioni tra l'utente e i server dei servizi
+        \end{itemize}
+
+    
+    \section{Protezione della Privacy e dell'Integrità delle Credenziali}
+        Per proteggere la privacy degli utenti e l'integrità delle credenziali:
+        \begin{itemize}
+            \item Le credenziali contengono solo le informazioni strettamente necessarie per l'accesso ai servizi, minimizzando l'esposizione di dati personali
+            
+            \item L'identità dell'utente non è rivelata al server del servizio qualificato, a meno che non sia strettamente necessario
+            
+            \item Le credenziali sono firmate digitalmente dalle autorità di rilascio, garantendo che non possano essere alterate o falsificate
+        \end{itemize}
+
+
+    \section{Conclusione}
+        La soluzione proposta mira a raggiungere un compromesso tra efficienza, trasparenza, confidenzialità e sicurezza. Descrive dettagliatamente le azioni delle parti oneste coinvolte nel sistema, garantendo che le credenziali siano emesse e verificate in modo sicuro e trasparente, minimizzando il coinvolgimento di terze parti fidate e proteggendo la privacy e l'integrità degli utenti.

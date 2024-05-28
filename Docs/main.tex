@@ -1,0 +1,91 @@
+\documentclass[a4paper, oneside]{book}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=3cm, bindingoffset=1cm]{geometry}
+\linespread{1.5}
+\usepackage{float}
+\usepackage{csquotes}
+\usepackage{subfig}
+\usepackage{graphicx}
+\usepackage{indentfirst}
+\usepackage{fancyhdr}
+\usepackage{array}
+\usepackage[hidelinks]{hyperref}
+\setlength{\parindent}{1cm}
+\usepackage{tcolorbox}
+
+\pagestyle{fancy}
+\renewcommand{\chaptermark}[1]{\markboth{\thechapter.\ \uppercase{#1}}{}}
+\fancyhf{}
+\fancyhead[C]{\textbf{\leftmark}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{1pt}
+\renewcommand{\footrulewidth}{1pt}
+\usepackage[Conny]{fncychap}
+
+\title{Algorithms and Protocols for Security Project}
+\author{Gruppo di Fuoco}
+\date{May 2024}
+
+\renewcommand{\contentsname}{\bf Indice}
+\renewcommand{\chaptername}{Capitolo}
+  
+\begin{document}
+    %Frontespizio
+    \begin{titlepage}
+        \begin{center}
+            \LARGE{\uppercase{Università degli Studi di Salerno}}\\
+            \vspace{5mm}
+            %Dipartimento
+        	\uppercase{\normalsize \textbf{Dipartimento di Ingegneria dell'Informazione ed Elettrica e Matematica Applicata} }\\
+        \end{center}
+        
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.35\textwidth]{logo_unisa}
+        \end{figure}
+        
+        \begin{center}
+            %Corso di Laurea
+        	\normalsize{ Corso di Laurea Magistrale in Ingegneria Informatica }\\
+        	\vspace{15mm}
+        	%Titolo
+            {\LARGE{\bf \textbf{eCRED}}}\\
+        	\vspace{3mm}
+        \end{center}
+        
+        \vspace{15mm}
+
+        \begin{center}
+            \begin{tabular}{ | c | c | c | c |} \hline
+                \textbf{Nome} & \textbf{Cognome} & \textbf{Matricola} & \textbf{E-Mail} \\ \hline
+                    Michele & Martino & 0622702424 & m.martino48@studenti.unisa.it \\
+                    \hline
+                    Francesco & Quagliuolo & 0622702412 & f.quagliuolo@studenti.unisa.it \\
+                    \hline
+                    Emanuele & Relmi & 0622702368 & e.relmi@studenti.unisa.it \\
+                    \hline
+                    Benito & Senese & 0622702425 & b.senese1@studenti.unisa.it \\
+                    \hline
+                \end{tabular}
+            \end{center}
+        
+        \vspace{20mm}
+        
+        %Anno Accademico
+        \centering{\large \uppercase{Anno Accademico 2023/2024}}
+    
+    \end{titlepage}
+
+    %Corpo della Tesi
+    \tableofcontents
+    \clearpage
+    \sloppy
+    \hyphenpenalty=10000
+    \exhyphenpenalty=10000
+    
+    \input{Sections/Wp1}
+    \input{Sections/Wp2}
+    \input{Sections/Wp3}
+    \input{Sections/Wp4}
+
+\end{document}
