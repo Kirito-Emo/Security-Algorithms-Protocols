@@ -1,5 +1,6 @@
 \chapter{WORK PACKAGE 2}
-In questo capitolo concentreremo la nostra attenzione nel presentare una soluzione che risponde al modello identificato nel \textit{Work Package 1 (WP1)}. L’obiettivo è quello di proporre un sistema che riesca a raggiungere un ragionevole compromesso tra efficienza, trasparenza, confidenzialità e sicurezza.
+In questo capitolo concentreremo la nostra attenzione nel presentare una soluzione che risponde al modello identificato nel \textit{Work Package 1 (WP1)}.
+L’obiettivo è quello di proporre un sistema che riesca a raggiungere un ragionevole compromesso tra efficienza, trasparenza, confidenzialità e sicurezza.
 
 \noindent Concentreremo la nostra attenzione sui seguenti problemi chiave:
     \begin{itemize}
@@ -43,84 +44,121 @@ In questo capitolo concentreremo la nostra attenzione nel presentare una soluzio
                 \item L'autorità di rilascio possiede certificati validi per firmare le credenziali e per la comunicazione TLS con l'utente
             \end{itemize}
 
-    \noindent Si procede adesso con l’analisi dettagliata di quanto delineato fino a questo momento.
+            \noindent Si procede adesso con l’analisi dettagliata di quanto delineato fino a questo momento.
 
 
-    \section{Processo di Richiesta e Rilascio delle Credenziali}
+        \subsection{Processo di Richiesta e Rilascio delle Credenziali}
+            
+            \subsubsection{Generazione di una coppia di chiavi}
+                \begin{itemize}
+                    \item Ogni utente genera una coppia di chiavi pubblica/privata
     
-        \subsection{Generazione di una coppia di chiavi}
+                    \item La chiave pubblica $pk_{utente}$ è generata in accordo all'algoritmo Gen(1$^n$)
+                    
+                    \item La chiave pubblica dell'utente è registrata presso le autorità competenti
+                \end{itemize}
+            
+            \subsubsection{Richiesta delle Credenziali}
+                \begin{itemize}
+                    \item  L'utente invia la sua chiave pubblica e la CIE alla CA
+                    
+                    \item La CA verifica l'identità dell'utente e, se verificata, emette una credenziale firmata digitalmente (X.509) contenente informazioni specifiche
+    
+                    \item Ogni certificato X.509 emesso contiene un numero di serie univoco che identifica in modo univoco la credenziale associata all'utente
+                \end{itemize}
+    
+            \subsubsection{Emissione della Credenziale}
+                \begin{itemize}
+                    \item L'autorità firma digitalmente la credenziale utilizzando la propria chiave privata, creando così un documento X.509 che attesta le informazioni specifiche dell'utente
+                \end{itemize}
+    
+    
+        \subsection{Processo di Identificazione e Accesso ai Servizi}
+            Quando un utente presenta una credenziale per accedere a un servizio, il servizio deve verificare che l'utente possieda effettivamente la chiave privata corrispondente alla chiave pubblica inclusa nel documento X.509.
+    
+            \subsubsection{Verifica delle Credenziali}
+                \begin{itemize}
+                    \item Il servizio decodifica la credenziale X.509 e verifica la firma digitale dell'autorità
+    
+                    \item Controlla che le informazioni contenute nella credenziale soddisfino i requisiti di accesso
+    
+                    \item Verifica che il numero di serie della credenziale non sia incluso nell'elenco delle revocazioni più aggiornato (CRL)
+                \end{itemize}
+    
+            \subsubsection{Autenticazione dell'Utente}
+                \begin{itemize}
+                    \item Quando l'utente desidera accedere a un servizio, utilizza la firma di Schnorr per autenticarsi al server
+    
+                    \item La firma di Schnorr permette di dimostrare la conoscenza della chiave privata senza rivelarla, aumentando così la sicurezza
+                \end{itemize}
+    
+            \subsubsection{Accesso ai Servizi}
+                \begin{itemize}
+                    \item Se le credenziali soddisfano i requisiti di accesso imposti dal servizio e non sono state revocate, l'utente ottiene l'accesso al servizio richiesto
+                    
+                    \item Il server registra l'accesso dell'utente in modo sicuro e trasparente, mantenendo un log degli accessi per future verifiche
+                \end{itemize}
+    
+    
+        \subsection{Politiche di Revoca e Aggiornamento della Certificate Revocation List (CRL)}
             \begin{itemize}
-                \item Ogni utente genera una coppia di chiavi pubblica/privata (se non l'ha già fatto durante la fase di registrazione della CIE)
-
-                \item Un utente genera la chiave pubblica $pk_{utente}$ in accordo all'algoritmo Gen(1$^n$)
-                
-                \item La chiave pubblica dell'utente è registrata presso le autorità competenti
+                \item Ogni certificato X.509 emesso contiene un numero di serie univoco
+    
+                \item Se un utente sospetta che la sua chiave privata sia stata compromessa o persa, può richiedere alla CA la revoca del certificato corrispondente
+    
+                \item La CA mantiene un database dei numeri di serie dei certificati emessi e revocati
+    
+                \item Quotidianamente, la CA genera una Certificate Revocation List (CRL) contenente i numeri di serie dei certificati revocati e la firma digitale della CA
+    
+                \item La CRL include anche un campo CRL Distribution Point che indica l'URL da cui è possibile ottenere l'ultima versione della CRL
+    
+                \item I server dei servizi verificano la validità delle credenziali confrontando il numero di serie della credenziale con la CRL più aggiornata
             \end{itemize}
     
-        \subsection{Richiesta delle Credenziali}
-            \begin{itemize}
-                \item  L'utente firma digitalmente la richiesta di credenziali con la propria chiave privata
-                
-                \item L'autorità competente verifica la firma utilizzando la chiave pubblica registrata
-            \end{itemize}
-
-        \subsection{Emissione del token di credenziale}
-            \begin{itemize}
-                \item Il token di credenziale contiene un campo aggiuntivo per la chiave pubblica dell'utente
-                
-                \item L'autorità firma il token di credenziale includendo la chiave pubblica dell'utente
-            \end{itemize}
-
-
-    \section{Processo di Identificazione e Accesso ai Servizi}
-        Quando un utente presenta il token di credenziale per accedere a un servizio, il servizio deve verificare che l'utente possieda effettivamente la chiave privata corrispondente alla chiave pubblica inclusa nel token.
-
-        \subsection{Verifica del Token}
-            \begin{itemize}
-                \item Il servizio decodifica il token e verifica la firma digitale dell'autorità
-
-                \item Controlla che l'attributo del token corrisponda ai requisiti di accesso
-            \end{itemize}
-
-        \subsection{Autenticazione dell'Utente}
-            \begin{itemize}
-                \item Il servizio genera una sfida (\textit{challenge}) crittografica
-
-                \item L'utente deve firmare la sfida con la propria chiave privata
-
-                \item Il servizio verifica la firma utilizzando la chiave pubblica inclusa nel token
-            \end{itemize}
     
-        \subsection{Accesso ai Servizi}
-            \begin{itemize}
-                \item Se le credenziali soddisfano i requisiti di accesso imposti dal servizio, l'utente ottiene l'accesso al servizio richiesto.
-                
-                \item Il server registra l'accesso dell'utente in modo sicuro e trasparente, mantenendo un log degli accessi per future verifiche.
-            \end{itemize}
-
-
     \section{Minimizzazione del Coinvolgimento di Terze Parti Fidate}
         Per minimizzare il coinvolgimento di terze parti fidate durante gli accessi ai servizi:
-    
+        
         \begin{itemize}
-            \item Le credenziali sono emesse una sola volta e non richiedono la verifica continua da parte delle autorità di rilascio durante ogni accesso
-        
-            \item I server dei servizi qualificati verificano autonomamente le credenziali utilizzando le informazioni pubbliche rese disponibili dalle autorità di rilascio
-        
-            \item L'utilizzo di firme digitali e connessioni TLS garantisce la sicurezza e l'integrità delle comunicazioni tra l'utente e i server dei servizi
+            \item Le credenziali sono emesse una sola volta come documenti X.509 e non richiedono la verifica continua da parte delle autorità di rilascio durante ogni accesso
+            
+            \item I server dei servizi qualificati verificano autonomamente i documenti X.509 delle credenziali utilizzando le informazioni pubbliche rese disponibili dalle autorità di rilascio
+            
+            \item L'utilizzo di firme digitali e connessioni TLS garantisce la sicurezza e l'integrità delle comunicazioni
         \end{itemize}
-
     
-    \section{Protezione della Privacy e dell'Integrità delle Credenziali}
+    
+    \section{Protezione della Privacy e Integrità delle Credenziali}
         Per proteggere la privacy degli utenti e l'integrità delle credenziali:
         \begin{itemize}
-            \item Le credenziali contengono solo le informazioni strettamente necessarie per l'accesso ai servizi, minimizzando l'esposizione di dati personali
-            
-            \item L'identità dell'utente non è rivelata al server del servizio qualificato, a meno che non sia strettamente necessario
-            
-            \item Le credenziali sono firmate digitalmente dalle autorità di rilascio, garantendo che non possano essere alterate o falsificate
+            \item Le credenziali sono emesse come documenti X.509 e contengono solo le informazioni strettamente necessarie per l'accesso ai servizi, riducendo l'esposizione di dati personali
+                
+             \item L'identità dell'utente non è rivelata al server del servizio qualificato attraverso i documenti X.509 delle credenziali, a meno che non sia strettamente necessario
+                
+             \item Le credenziali sono firmate digitalmente dalle autorità di rilascio, garantendo che non possano essere alterate o falsificate
         \end{itemize}
-
-
+    
+    
     \section{Conclusione}
-        La soluzione proposta mira a raggiungere un compromesso tra efficienza, trasparenza, confidenzialità e sicurezza. Descrive dettagliatamente le azioni delle parti oneste coinvolte nel sistema, garantendo che le credenziali siano emesse e verificate in modo sicuro e trasparente, minimizzando il coinvolgimento di terze parti fidate e proteggendo la privacy e l'integrità degli utenti.
+        La soluzione proposta mira a raggiungere un compromesso tra efficienza, trasparenza, confidenzialità e sicurezza.
+        Il sistema descrive dettagliatamente le azioni delle parti oneste coinvolte, garantendo che le credenziali siano emesse e verificate in modo sicuro e trasparente.
+        L'uso di certificati X.509 firmati digitalmente dalle autorità di certificazione (CA) assicura che le credenziali siano autentiche e non alterabili.
+        Inoltre, l'adozione della firma di Schnorr per l'autenticazione al server minimizza il coinvolgimento di terze parti fidate durante l'accesso ai servizi, proteggendo la privacy e l'integrità degli utenti.
+        Questa architettura bilancia le esigenze di sicurezza e confidenzialità con la necessità di un sistema efficiente e utilizzabile, riducendo al minimo i rischi associati agli attacchi su larga scala e garantendo un alto livello di affidabilità e trasparenza.
+    
+
+    \section{Proposta di Soluzione}
+        %Inserire testo
+
+        \subsection{Possibile vulnerabilità}
+            % Inserire testo
+
+        \subsection{Proposta \#2 di Soluzione}
+            % Inserire nuove info su 
+
+
+    \section{Specifiche degli algoritmi utilizzati}
+        % Inserire testo
+
+        \subsection{Gen}
+            % Inserire testo
