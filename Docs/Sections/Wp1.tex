@@ -1,367 +1,346 @@
 \chapter{WORK PACKAGE 1}
-In questo primo capitolo ci concentreremo sulla definizione degli attori onesti coinvolti nel sistema, analizzando i loro obiettivi e le funzionalità che si intendono realizzare.
-Gli attori onesti sono quegli individui o entità che agiscono in conformità con le regole e le politiche stabilite, cercando di raggiungere i loro obiettivi senza compromettere l'integrità del sistema.
-
-Successivamente, esamineremo i possibili avversari (o threat models) che potrebbero essere interessati a compromettere il sistema, esaminando le loro risorse e le motivazioni che li spingono ad agire.
-Questa analisi ci permetterà di identificare gli attacchi che il sistema potrebbe subire e di comprendere quali misure di sicurezza dovranno essere adottate per contrastarli.
-
-Una volta compreso il contesto in cui il sistema opera, identificheremo le proprietà di sicurezza che si vorrebbero preservare in presenza di attacchi.
-Queste proprietà sono fondamentali per garantire il corretto funzionamento del sistema e la protezione delle informazioni sensibili.
-
-\noindent Di seguito un elenco dettagliato di tali attori e delle loro responsabilità.
-
-\section{Attori del Sistema}
-
-    \subsection{Utente}
-        Gli utenti sono le persone che necessitano di accedere ai servizi qualificati offerti dai server.
-        Ogni utente possiede una Carta d'Identità Elettronica (CIE) che contiene le credenziali rilasciate dalle autorità competenti.
-        La CIE permette agli utenti di firmare digitalmente le loro richieste di accesso, garantendo così l'integrità e l'autenticità delle credenziali presentate.
-         I loro obiettivi sono: richiedere e ottenere le credenziali necessarie dalle autorità, per poi utilizzarle per accedere a servizi specifici in modo sicuro; mentre il loro compito è quello di proteggere CIE e PIN da accessi non autorizzati.
-
+    In questo primo capitolo ci concentreremo sulla definizione degli attori onesti coinvolti nel sistema, analizzando i loro obiettivi e le funzionalità che si intendono realizzare.
+    Gli attori onesti sono quegli individui o entità che agiscono in conformità con le regole e le politiche stabilite, cercando di raggiungere i loro obiettivi senza compromettere l'integrità del sistema.
     
-    \subsection{Server}
-        I server sono entità che offrono servizi qualificati, accessibili solo ai possessori di specifiche credenziali.
-        I server devono essere in grado di verificare le credenziali presentate dagli utenti e stabilire se sono rilasciate da autorità fidate.
-        Il loro obiettivo è offrire servizi in modo sicuro e limitato solo agli utenti autorizzati.
-        Sono, inoltre, responsabili di gestire le richieste di accesso, garantire la sicurezza e la privacy delle operazioni e minimizzare il coinvolgimento di terze parti fidate così da ridurre i rischi legati ad un singolo punto di fallimento.
-
-        
-    \subsection{Autorità di Rilascio delle Credenziali}
-        Le autorità di rilascio sono enti fidati che emettono credenziali agli utenti, garantendo che queste siano valide e affidabili.
-        Queste autorità verificano l'identità degli utenti e le informazioni correlate prima di rilasciare le credenziali.
-        Esse possono essere enti governativi, istituzioni pubbliche o altre organizzazioni autorizzate a rilasciare certificati digitali.
-        Sono, quindi, responsabili di:
-            \begin{itemize}
-                \item verificare e validare le informazioni degli utenti;
-
-                \item emettere credenziali autentiche;
-
-                \item garantirne la sicurezza e l'integrità;
-
-                \item mantenere un registro delle credenziali emesse.
-            \end{itemize}
-
-
-    \subsection{Autorità Rilascio CIE}
-        Gli enti che si occupano dell'emissione della CIE con il PIN associato sono fondamentalmente due, l'ufficio anagrafe e l'Istituto Poligrafico e Zecca dello Stato (IPZS), che vengono accorpati in un'unica entità per convenienza e semplicità. Questa autorità si occupa della verifica dell'identità degli utenti, della gestione delle pratiche amministrative relative alla registrazione delle informazioni anagrafiche e della generazione e gestione delle chiavi crittografiche e dei certificati digitali necessari per la firma elettronica.
-        È responsabile di:
-            \begin{itemize}
-                \item verificare l'identità degli utenti;
-
-                \item registrare le informazioni anagrafiche;
-
-                \item produrre e consegnare la CIE, insieme al suo PIN, all'utente;
-            
-                \item generare e memorizzare in modo sicuro le chiavi segrete e i certificati digitali all'interno della CIE;
-
-                \item garantire che i certificati digitali siano validi e riconosciuti dalle autorità competenti;
-
-                \item implementare misure di sicurezza avanzate per proteggere la CIE da contraffazioni e accessi non autorizzati.
-            \end{itemize}
-
-
-\section{Attaccanti del Sistema}
-    Nel contesto del sistema descritto, è fondamentale analizzare e comprendere i potenziali attaccanti che potrebbero cercare di comprometterlo, considerando le loro motivazioni e le risorse a loro disposizione.
-    Questi attori e gruppi di attaccanti rappresentano diverse minacce al sistema e richiedono misure di sicurezza specifiche per essere contrastati efficacemente.
-
-    \begin{itemize}
-        \item \textbf{Anti-Tech Theorist}
-            \begin{itemize}
-                \item \textbf{Tipologia:} passivo/attivo
-                
-                \item \textbf{Descrizione:} avversario che si oppone all’innovazione e all'adozione di nuove tecnologie, sostenendo che qualunque dispositivo può essere compromesso, a discapito della privacy degli utenti.
-                Il suo scopo è quello di amplificare notizie di violazioni di dati o problemi di privacy dei sistemi per influenzare l’opinione pubblica e screditare le nuove proposte nell'ambito della sicurezza informatica.
-               
-                \item \textbf{Risorse}
-                    \begin{itemize}
-                        \item Abilità comunicative elevate
-
-                        \item Rete di contatti con altri oppositori delle nuove tecnologie
-
-                        \item Accesso ai media e ai social network per diffondere messaggi allarmistici
-                    \end{itemize}
-            \end{itemize}
-
-
-        \item \textbf{The Eavesdropper}
-            \begin{itemize}
-                \item \textbf{Tipologia:} passivo
-                
-                \item \textbf{Descrizione:} avversario interessato a intercettare tutte le operazioni svolte tramite il sistema (autenticazione, dati della CIE, etc.).
-                Questa tipologia di avversario può essere sia interna all’organizzazione che esterna.
-                L'obiettivo principale è quello di collezionare le informazioni inerenti agli utenti, senza però compromettere i protocolli, i quali sono eseguiti onestamente.
-                
-                \item \textbf{Risorse}
-                    \begin{itemize}
-                        \item Conoscenza approfondita delle tecniche di intercettazione e analisi delle comunicazioni, nonché della crittografia utilizzata nel sistema per comprendere e interpretare correttamente i dati intercettati
-
-                        \vspace{3mm}
-
-                        \item Capacità di monitorare e intercettare le comunicazioni tra gli utenti e il sistema, compresi i messaggi di autenticazione, i dati della CIE e qualsiasi altra informazione scambiata
-
-                        \vspace{3mm}
-
-                        \item Disponibilità di risorse computazionali significative per analizzare e elaborare grandi quantità di dati intercettati
-                    \end{itemize}
-            \end{itemize}
-
-
-        \item \textbf{Malevolent Server}
-            \begin{itemize}
-                \item \textbf{Tipologia:} attivo
-                
-                \item \textbf{Descrizione:} server con comportamento malevolo.
-                I suoi compiti includono: la corretta gestione delle connessioni, la verifica delle credenziali e l'erogazione del servizio richiesto.
-                Tuttavia, questa tipologia di avversario sfrutta le informazioni ricevuti dagli utenti per scopi illeciti, come il riutilizzo di informazioni personali, la vendita dei dati carpiti a terzi, compromettendo la privacy degli utenti.
-                
-                \item \textbf{Risorse}
-                    \begin{itemize}
-                        \item Controllo completo sui dati e sulle risorse del server, inclusi database utenti, registri di accesso e altri dati sensibili
-
-                        \vspace{3mm}
-
-                        \item Possibilità di accedere alle credenziali ricevute per l'accesso al servizio, consentendo di utilizzare queste informazioni per scopi illeciti.
-                    \end{itemize}
-            \end{itemize}
-
-
-        \item \textbf{The Impersonator}
-            \begin{itemize}
-                \item \textbf{Tipologia:} attivo
-                
-                \item \textbf{Descrizione:} avversario che, essendo entrato in possesso di informazioni personali di un utente, si maschera personificando quest’ultimo.
-                Mira ad ottenere uno o più servizi a nome della persona di cui ha i dati.
-                
-                \item \textbf{Risorse}
-                    \begin{itemize}
-                        \item Possesso di un vasto database di informazioni personali ottenute illegalmente, che consente la creazione di profili dettagliati delle vittime e di utilizzare le informazioni per scopi malevoli
-                    \end{itemize}
-            \end{itemize}
-
-
-        \item \textbf{Identity Thief}
-            \begin{itemize}
-                \item \textbf{Tipologia:} attivo
-
-                \item \textbf{Descrizione:} avversario che mira a rubare identità o credenziali per impersonare gli utenti legittimi e ottenere accesso non autorizzato ai servizi.
-                Potrebbe utilizzare tecniche di phishing, furto di credenziali o exploit delle vulnerabilità per ottenere informazioni sensibili e assumere l'identità di altri utenti.
-
-                \item \textbf{Risorse}
-                    \begin{itemize}
-                        \item Disponibilità di risorse computazionali sufficienti per eseguire attacchi brute-force, decrittazione o altri metodi per ottenere informazioni sensibili o compromettere la sicurezza del sistema
-
-                        \vspace{3mm}
-
-                        \item Competenze nel phishing e nell'ingegneria sociale, accesso a database di credenziali rubate, capacità di creare siti web e messaggi convincenti
-                    \end{itemize}
-            \end{itemize}
-
-
-        \item \textbf{The Denier}
-            \begin{itemize}
-                \item \textbf{Tipologia:} attivo
-                
-                \item \textbf{Descrizione:} avversario il cui scopo è compromettere il sistema, colpendo gli utenti o i servizi contemporaneamente.
-                Potrebbe utilizzare botnets, malware o attacchi DoS/DDoS per sovraccaricare o infiltrare il sistema, causando danni diffusi e gravi interruzioni del servizio.
-                
-                \item \textbf{Risorse}
-                    \begin{itemize}
-                        \item Capacità di coordinare attacchi su vasta scala
-
-                        \vspace{3mm}
-
-                        \item Accesso a risorse informatiche distribuite (come server cloud, dispositivi IoT compromessi o altre infrastrutture che possono essere sfruttate per eseguire attacchi distribuiti)
-
-                        \vspace{3mm}
-
-                        \item Possibilità di avere motivazioni finanziarie o ideologiche significative per condurre gli attacchi, come il lucro finanziario, il furto di dati sensibili o il danneggiamento delle infrastrutture critiche per fini politici o di estorsione
-                    \end{itemize}
-            \end{itemize}
-
-
-        \item \textbf{Evil Insider}
-            \begin{itemize}
-                \item \textbf{Tipologia:} passivo/attivo
-                
-                \item \textbf{Descrizione:} avversario interno al sistema, che agisce in modo malevolo per ottenere benefici personali o danneggiare l'organizzazione.
-                Potrebbe rubare credenziali o informazioni sensibili, manipolare il sistema o sabotare le operazioni per raggiungere i suoi obiettivi.
-                
-                \item \textbf{Risorse}
-                    \begin{itemize}
-                        \item Autorizzazioni elevate all'interno del sistema, compreso l'accesso a dati sensibili e risorse critiche
-
-                        \vspace{3mm}
-
-                        \item Conoscenza interna dei processi e delle vulnerabilità
-                    \end{itemize}
-            \end{itemize}
-
-
-        \item \textbf{The Cryptographer}
-            \begin{itemize}
-                \item \textbf{Tipologia:} attivo
-                
-                \item \textbf{Descrizione:} avversario che mira a compromettere la sicurezza del sistema, attaccando le autorità di certificazione o le infrastrutture chiave del sistema di identificazione, sfruttando vulnerabilità nei protocolli crittografici utilizzati per proteggere le comunicazioni e le credenziali.
-                Potrebbe condurre attacchi di tipo man-in-the-middle, falsificare certificati o compromettere le chiavi crittografiche per ottenere accessi non autorizzati.
-                
-                \item \textbf{Risorse}
-                    \begin{itemize}
-                        \item Comprensione approfondita dei protocolli crittografici, dei meccanismi di autenticazione e delle vulnerabilità delle autorità di certificazione
-
-                        \vspace{3mm}
-
-                        \item Accesso a risorse computazionali per analizzare e rompere algoritmi crittografici
-                    \end{itemize}
-            \end{itemize}
-
-
-        \item \textbf{Data Miner}
-            \begin{itemize}
-                \item \textbf{Tipologia:} passivo/attivo
-
-                \item \textbf{Descrizione:} questo avversario mira a raccogliere e sfruttare i dati degli utenti per fini di analisi, profilazione o vendita a terzi
-
-                \item \textbf{Risorse}
-                    \begin{itemize}
-                        \item Competenze nell'analisi dei dati
-                        
-                        \vspace{3mm}
-
-                        \item Accesso a tecnologie per l'estrazione e l'elaborazione dei dati
-
-                        \vspace{3mm}
-
-                        \item Comprensione delle leggi sulla privacy e delle normative sul trattamento dei dati
-                    \end{itemize}
-            \end{itemize}
-
-
-        \item \textbf{The Data Harvesters}
-            \begin{itemize}
-                \item \textbf{Tipologia:} attivo
-
-                \item \textbf{Descrizione:} questo gruppo mira a raccogliere e sfruttare i dati degli utenti per scopi di profitto o di spionaggio. Utilizzano una combinazione di tecniche di intercettazione, furto di identità e analisi dei dati per ottenere informazioni sensibili
-
-                \item \textbf{Risorse}
-                    \begin{itemize}
-                        \item Competenze nell'intercettazione delle comunicazioni e nell'analisi dei dati (The Eavesdropper)
-                        
-                        \vspace{3mm}
-
-                        \item Accesso a database di informazioni personali rubate (Identity Thief)
-
-                        \vspace{3mm}
-
-                        \item Capacità di elaborare grandi quantità di dati raccolti per identificare opportunità di profitto o informazioni sensibili (Data Miner)
-                    \end{itemize}
-            \end{itemize}
-
-
-        \item \textbf{The Insider Threat Alliance}
-            \begin{itemize}
-                \item \textbf{Tipologia:} attivo/passivo
-
-                \item \textbf{Descrizione:} questa coalizione è composta da attaccanti con accesso privilegiato al sistema, che agiscono internamente per ottenere benefici personali o danneggiare l'organizzazione.
-                Collaborano per compromettere le infrastrutture critiche e sfruttare le informazioni riservate.
-
-                \item \textbf{Risorse}
-                    \begin{itemize}
-                        \item Autorizzazioni elevate e conoscenza interna dei processi (Evil Insider)
-                        
-                        \vspace{3mm}
-
-                        \item Comprensione approfondita dei protocolli crittografici e delle vulnerabilità (The Cryptographer)
-
-                        \vspace{3mm}
-
-                        \item Controllo completo sui dati e sulle risorse del server (Malevolent Server)
-                    \end{itemize}
-            \end{itemize}
-
-
-        \item \textbf{Crypto Conspirators}
-            \begin{itemize}
-                \item \textbf{Tipologia:} attivo
-
-                \item \textbf{Descrizione:} si concentra sull'attacco alla crittografia e alla sicurezza del sistema.
-                Utilizzano competenze avanzate in crittografia, furto di identità e infiltrazione interna per compromettere la sicurezza
-
-                \item \textbf{Risorse}
-                    \begin{itemize}
-                        \item Autorizzazioni elevate e conoscenza interna dei processi Competenze avanzate in crittografia e conoscenza dei protocolli di sicurezza (The Cryptographer)
-                        
-                        \vspace{3mm}
-
-                        \item Comprensione approfondita dei protocolli crittografici e delle vulnerabilità Accesso a informazioni personali rubate per ottenere accesso non autorizzato (Identity Thief)
-
-                        \vspace{3mm}
-
-                        \item Autorizzazioni elevate e accesso interno per facilitare gli attacchi (Evil Insider)
-                    \end{itemize}
-            \end{itemize}
-        
-    \end{itemize}
-
-
-\section{Proprietà}
-    L'obiettivo è sviluppare un sistema che consenta l'accesso remoto a servizi riservati agli utenti in possesso delle credenziali richieste.
-    In questo contesto, diverse autorità rilasciano credenziali agli utenti, i quali le utilizzano per accedere a servizi qualificati, ossia servizi limitati ai possessori di specifiche credenziali.
+    Successivamente, esamineremo i possibili avversari (o threat models) che potrebbero essere interessati a compromettere il sistema, esaminando le loro risorse e le motivazioni che li spingono ad agire.
+    Questa analisi ci permetterà di identificare gli attacchi che il sistema potrebbe subire e di comprendere quali misure di sicurezza dovranno essere adottate per contrastarli.
     
-    Per garantire l'efficacia e la sicurezza del sistema, è necessario considerare diverse proprietà fondamentali: confidenzialità, integrità, trasparenza ed efficienza.
-    Queste proprietà non solo assicurano che il sistema funzioni correttamente, ma proteggono anche contro potenziali minacce e abusi.
-
+    Una volta compreso il contesto in cui il sistema opera, identificheremo le proprietà di sicurezza che si vorrebbero preservare in presenza di attacchi.
+    Queste proprietà sono fondamentali per garantire il corretto funzionamento del sistema e la protezione delle informazioni sensibili.
     
-    \subsection{Confidenzialità}
-        \begin{itemize}
-            \item \textbf{C1:} I dati sensibili degli utenti devono essere protetti, ovvero accessibili solo dalle parti autorizzate in modo controllato
-            
-            \item \textbf{C2:} Garantire la privacy delle comunicazioni tra gli utenti e i server che offrono i servizi, in modo che non sia possibile intercettare o rubare le credenziali trasmesse
+    \noindent Di seguito un elenco dettagliato di tali attori e delle loro responsabilità.
 
-            \item \textbf{C3:} Garantire la privacy delle comunicazioni tra gli utenti e le autorità di rilascio delle credenziali, in modo che non sia possibile carpire dati personali relativi agli utenti
-            
-            \item \textbf{C4:} Tutelare gli utenti contro i malintenzionati, di modo che questi ultimi non possano utilizzare l'identità di altri utenti, accedendo ai servizi sfruttando la loro CIE
+    \section{Attori del Sistema}
 
-            \item \textbf{C5:} Garantire che un utente non sia in grado di richiedere una CIE valida sfruttando informazioni non correlate alla sua persona
-        \end{itemize}
-
-
-    \subsection{Integrità}
-        \begin{itemize}
-                \item \textbf{I1:} Preservare l'integrità delle credenziali rilasciate, garantendo che non possano essere alterate o falsificate
-            
-            \item \textbf{I2:} Il sistema deve garantire che le credenziali esibite dagli utenti siano verificabili e autentiche, ovvero rilasciate da autorità riconosciute come affidabili
-            
-            \item \textbf{I3:} Verificare che le credenziali fornite dall'utente siano valide e corrispondano alle informazioni contenute nella CIE
-
-            \item \textbf{I4:} La CIE restituisce una firma del messaggio solo se il PIN fornito corrisponde a quello memorizzato, garantendo che solo l'utente legittimo possa ottenere una firma valida
-
-            \item \textbf{I5:} Verificare che la CIE sia riconducibile all'utente che la utilizza
-            
-            \item \textbf{I6:} Se un servizio è rivolto ad un individuo in possesso di due credenziali allora non deve essere possibile per due utenti, ciascuno avente una sola credenziale, combinare le loro informazioni per accedere al servizio
-        \end{itemize}
-
-
-    \subsection{Trasparenza}
-        \begin{itemize}
-            \item \textbf{T1:} Il sistema di autenticazione tramite CIE dovrebbe basarsi su algoritmi noti e verificabili, di modo da permettere una verifica di essi da parte degli utenti, rendendo arduo il processo di manomissione da parte di un malintenzionato, senza che quest'ultimo sia scoperto  
+        \subsection{Utente}
+            Gli utenti sono le persone che necessitano di accedere ai servizi qualificati offerti dai server.
+            Ogni utente possiede una Carta d'Identità Elettronica (CIE), contenente un certificato digitale di tipo X.509v3, e il PIN ad essa associato.
+            La CIE ha una chiave segreta di firma, utilizzabile dall'utente durante la fase di richiesta delle credenziali, garantendo così l'integrità e l'autenticità dei dati forniti alle CA.
+            Il loro obiettivo è richiedere e ottenere le credenziali necessarie dalle autorità, per poi utilizzarle per accedere a servizi specifici in modo sicuro.
         
-            \item \textbf{T2:} Il processo di rilascio delle credenziali deve essere trasparente e verificabile da tutte le parti coinvolte, riducendo la dipendenza da terze parti fidate così da ridurre il rischio di abuso   
+        \subsection{Server}
+            I server sono entità che offrono servizi qualificati, accessibili solo ai possessori di specifiche credenziali.
+            Essi devono essere in grado di verificare le credenziali presentate dagli utenti e stabilire se sono rilasciate da autorità fidate.
+            Il loro obiettivo è offrire servizi in modo sicuro e limitato solo agli utenti autorizzati.
+            Sono, inoltre, responsabili di gestire le richieste di accesso, garantire la sicurezza e la privacy delle operazioni e minimizzare il coinvolgimento di terze parti fidate così da ridurre i rischi legati ad un singolo punto di fallimento.
             
-            \item \textbf{T3:} Assicurarsi che le politiche di accesso ai servizi siano chiare e comprensibili, consentendo agli utenti di sapere quali credenziali siano necessarie per accedere agli stessi, limitando così la possibilità di accessi non autorizzati
+        \subsection{Autorità di Rilascio delle Credenziali}
+            Le autorità di rilascio delle credenziali (CA) sono enti fidati che emettono credenziali agli utenti, garantendo che queste siano valide e autentiche.
+            Queste autorità verificano l'identità degli utenti e le informazioni correlate prima di rilasciare le credenziali.
+            Esse possono essere enti governativi, istituzioni pubbliche o altre organizzazioni autorizzate a rilasciare certificati digitali.
+            Sono, quindi, responsabili di:
+                \begin{itemize}
+                    \item verificare e validare le informazioni degli utenti;
+    
+                    \item emettere credenziali autentiche;
+    
+                    \item garantirne la sicurezza e l'integrità;
+    
+                    \item mantenere un registro delle credenziali emesse.
+                \end{itemize}
+    
+        \subsection{Autorità Rilascio CIE}
+            Gli enti che si occupano dell'emissione della CIE con il PIN associato sono fondamentalmente due: l'Ufficio Anagrafe e l'Istituto Poligrafico e Zecca dello Stato (IPZS), che vengono accorpati in un'unica entità per convenienza e semplicità. Questa autorità si occupa della gestione delle pratiche amministrative relative alla registrazione delle informazioni anagrafiche e della generazione e gestione delle chiavi crittografiche e dei certificati digitali necessari per la firma elettronica. \\
+            È responsabile di:
+                \begin{itemize}        
+                    \item produrre e consegnare la CIE, insieme al suo PIN, all'utente;
+                
+                    \item generare e memorizzare in modo sicuro la chiave segreta e il certificato digitale all'interno della CIE;
+    
+                    \item garantire che i certificati digitali siano validi e riconosciuti dalle autorità competenti;
+    
+                    \item implementare misure di sicurezza avanzate per proteggere la CIE da contraffazioni e accessi non autorizzati.
+                \end{itemize}
 
-            \item \textbf{T4:} La fiducia in specifiche parti deve essere giustificata da motivazioni concrete, come la possibilità di rilevare e punire abusi o il preservare la buona reputazione
-        \end{itemize}
 
-
-    \subsection{Efficienza}
+    \section{Attaccanti del Sistema}
+        Nel contesto del sistema descritto, è fondamentale analizzare e comprendere i potenziali attaccanti che potrebbero cercare di comprometterlo, considerando le motivazioni e le risorse a loro disposizione.
+        Questi attori e gruppi di attaccanti rappresentano diverse minacce al sistema e richiedono misure di sicurezza specifiche per essere contrastati efficacemente.
+    
         \begin{itemize}
-            \item \textbf{E1:} Il sistema deve consentire ai server di controllare l'accesso utilizzando politiche avanzate e flessibili, permettendo di definire criteri di accesso complessi e specifici. Questo include la possibilità di esprimere condizioni logiche avanzate (come AND, OR, NOT) basate sulle credenziali degli utenti
-            
-            \item \textbf{E2:} Garantire che il processo di rilascio e verifica delle credenziali sia eseguito in modo rapido ed efficiente, riducendo al minimo i tempi di attesa e l'impatto sulle prestazioni del sistema
-            
-            \item \textbf{E3:} Assicurare che l'ottenimento delle credenziali tramite CIE avvenga in modo semplice e veloce, facilitando l'accesso remoto ai servizi digitali
+            \item \textbf{Anti-Tech Theorist}
+                \begin{itemize}
+                    \item \textbf{Tipologia:} passivo/attivo
+                    
+                    \item \textbf{Descrizione:} avversario che si oppone all’innovazione e all'adozione di nuove tecnologie, sostenendo che qualunque dispositivo può essere compromesso, a discapito della privacy degli utenti.
+                    Il suo scopo è quello di amplificare notizie di violazioni di dati o problemi di privacy dei sistemi per influenzare l’opinione pubblica e screditare le nuove proposte nell'ambito della sicurezza informatica.
+                   
+                    \item \textbf{Risorse}
+                        \begin{itemize}
+                            \item Abilità comunicative elevate
+    
+                            \item Rete di contatti con altri oppositori delle nuove tecnologie
+    
+                            \item Accesso ai media e ai social network per diffondere messaggi allarmistici
+                        \end{itemize}
+                \end{itemize}
+    
+            \item \textbf{The Eavesdropper}
+                \begin{itemize}
+                    \item \textbf{Tipologia:} passivo
+                    
+                    \item \textbf{Descrizione:} avversario interessato a intercettare tutte le operazioni svolte tramite il sistema (autenticazione, dati della CIE, etc.).
+                    Questa tipologia di avversario può essere sia interna alle CA o ai server che esterna.
+                    L'obiettivo principale è quello di collezionare le informazioni inerenti agli utenti, senza però compromettere i protocolli, i quali sono eseguiti onestamente.
+                    
+                    \item \textbf{Risorse}
+                        \begin{itemize}
+                            \item Conoscenza approfondita delle tecniche di intercettazione e analisi delle comunicazioni, nonché della crittografia utilizzata nel sistema per comprendere e interpretare correttamente i dati intercettati
+    
+                            \vspace{3mm}
+    
+                            \item Capacità di monitorare e intercettare le comunicazioni tra gli utenti e il sistema
+    
+                            \vspace{3mm}
+    
+                            \item Disponibilità di risorse computazionali significative per analizzare e elaborare grandi quantità di dati intercettati
+                        \end{itemize}
+                \end{itemize}
+    
+            \item \textbf{Malevolent Server}
+                \begin{itemize}
+                    \item \textbf{Tipologia:} attivo
+                    
+                    \item \textbf{Descrizione:} server con comportamento malevolo.
+                    I suoi compiti includono: la corretta gestione delle connessioni, la verifica delle credenziali e l'erogazione del servizio richiesto.
+                    Tuttavia, questa tipologia di avversario sfrutta le informazioni ricevuti dagli utenti per scopi illeciti, come il riutilizzo di informazioni personali o la vendita dei dati carpiti a terzi, compromettendo la privacy degli utenti.
+                    
+                    \item \textbf{Risorse}
+                        \begin{itemize}
+                            \item Controllo completo sui dati e sulle risorse del server, inclusi database utenti, registri di accesso e altri dati sensibili
+    
+                            \vspace{3mm}
+    
+                            \item Possibilità di accedere alle credenziali ricevute per l'accesso al servizio, consentendo di utilizzare queste informazioni per scopi illeciti.
+                        \end{itemize}
+                \end{itemize}
+    
+            \item \textbf{Identity Thief}
+                \begin{itemize}
+                    \item \textbf{Tipologia:} attivo
+    
+                    \item \textbf{Descrizione:} avversario che possiede o mira a rubare identità e/o credenziali per impersonare gli utenti legittimi e ottenere accesso non autorizzato ai servizi.
+                    Potrebbe utilizzare tecniche di phishing, furto di credenziali o exploit delle vulnerabilità per ottenere informazioni sensibili e assumere l'identità di altri utenti.
+    
+                    \item \textbf{Risorse}
+                        \begin{itemize}
+                            \item Disponibilità di risorse computazionali sufficienti per eseguire attacchi brute-force, decrittazione o altri metodi per ottenere informazioni sensibili o compromettere la sicurezza del sistema
+    
+                            \vspace{3mm}
 
-            \item \textbf{E4:} Progettare il sistema in modo che possa gestire un grande numero di utenti e richieste contemporaneamente senza degradare le performance
+                            \item Possesso di un vasto database di informazioni personali ottenute illegalmente, che consente la creazione di profili dettagliati delle vittime e di utilizzare le informazioni per scopi malevoli
 
-            \item \textbf{E5:} Assicurarsi che il sistema sia compatibile con vari dispositivi e piattaforme, inclusi dispositivi mobili e desktop, per massimizzare l'accessibilità
+                            \vspace{3mm}
+    
+                            \item Competenze nel phishing e nell'ingegneria sociale, accesso a database di credenziali rubate, capacità di creare siti web e messaggi convincenti
+                        \end{itemize}
+                \end{itemize}
+    
+            \item \textbf{The Denier}
+                \begin{itemize}
+                    \item \textbf{Tipologia:} attivo
+                    
+                    \item \textbf{Descrizione:} avversario il cui scopo è compromettere il sistema, colpendo gli utenti o i servizi contemporaneamente.
+                    Potrebbe utilizzare botnets, malware o attacchi DoS/DDoS per sovraccaricare o infiltrare il sistema, causando danni diffusi e gravi interruzioni del servizio.
+                    
+                    \item \textbf{Risorse}
+                        \begin{itemize}
+                            \item Capacità di coordinare attacchi su vasta scala
+    
+                            \vspace{3mm}
+    
+                            \item Accesso a risorse informatiche distribuite (come server cloud, dispositivi IoT compromessi o altre infrastrutture che possono essere sfruttate per eseguire questo tipo di attacchi)
+    
+                            \vspace{3mm}
+    
+                            \item Possibilità di avere motivazioni finanziarie o ideologiche significative per condurre gli attacchi, come il lucro finanziario, il furto di dati sensibili o il danneggiamento delle infrastrutture critiche per fini politici o di estorsione
+                        \end{itemize}
+                \end{itemize}
+    
+            \item \textbf{Evil Insider}
+                \begin{itemize}
+                    \item \textbf{Tipologia:} passivo/attivo
+                    
+                    \item \textbf{Descrizione:} avversario interno al sistema, che agisce in modo malevolo per ottenere benefici personali o danneggiare l'organizzazione.
+                    Potrebbe rubare credenziali o informazioni sensibili, manipolare il sistema o sabotare le operazioni per raggiungere i suoi obiettivi.
+                    
+                    \item \textbf{Risorse}
+                        \begin{itemize}
+                            \item Autorizzazioni elevate all'interno del sistema, compreso l'accesso a dati sensibili e risorse critiche
+    
+                            \vspace{3mm}
+    
+                            \item Conoscenza interna dei processi e delle vulnerabilità
+                        \end{itemize}
+                \end{itemize}
+    
+            \item \textbf{The Cryptographer}
+                \begin{itemize}
+                    \item \textbf{Tipologia:} attivo
+                    
+                    \item \textbf{Descrizione:} avversario che mira a compromettere la sicurezza del sistema, attaccando le autorità di certificazione o le infrastrutture chiave del sistema di identificazione, sfruttando vulnerabilità nei protocolli crittografici utilizzati per proteggere le comunicazioni e le credenziali.
+                    Potrebbe condurre attacchi di tipo man-in-the-middle, falsificare certificati o compromettere le chiavi crittografiche per ottenere accessi non autorizzati.
+                    
+                    \item \textbf{Risorse}
+                        \begin{itemize}
+                            \item Comprensione approfondita dei protocolli crittografici, dei meccanismi di autenticazione e delle vulnerabilità delle autorità di certificazione
+    
+                            \vspace{3mm}
+    
+                            \item Accesso a risorse computazionali per analizzare e rompere algoritmi crittografici
+                        \end{itemize}
+                \end{itemize}
+    
+            \item \textbf{Data Miner}
+                \begin{itemize}
+                    \item \textbf{Tipologia:} passivo/attivo
+    
+                    \item \textbf{Descrizione:} questo avversario mira a raccogliere e sfruttare i dati degli utenti per fini di analisi, profilazione o vendita a terzi
+    
+                    \item \textbf{Risorse}
+                        \begin{itemize}
+                            \item Competenze nell'analisi dei dati
+                            
+                            \vspace{3mm}
+    
+                            \item Accesso a tecnologie per l'estrazione e l'elaborazione dei dati
+    
+                            \vspace{3mm}
+    
+                            \item Comprensione delle leggi sulla privacy e delle normative sul trattamento dei dati
+                        \end{itemize}
+                \end{itemize}
+    
+            \item \textbf{The Data Harvesters}
+                \begin{itemize}
+                    \item \textbf{Tipologia:} attivo
+    
+                    \item \textbf{Descrizione:} questo gruppo mira a raccogliere e sfruttare i dati degli utenti per scopi di profitto o di spionaggio.
+                    Utilizzano una combinazione di tecniche di intercettazione, furto di identità, spyware e analisi dei dati per ottenere informazioni sensibili
+    
+                    \item \textbf{Risorse}
+                        \begin{itemize}
+                            \item Competenze nell'intercettazione delle comunicazioni e nell'analisi dei dati (The Eavesdropper)
+                            
+                            \vspace{3mm}
+    
+                            \item Accesso a database di informazioni personali rubate (Identity Thief)
+    
+                            \vspace{3mm}
+    
+                            \item Capacità di elaborare grandi quantità di dati raccolti per identificare opportunità di profitto o informazioni sensibili (Data Miner)
+                        \end{itemize}
+                \end{itemize}
+    
+            \item \textbf{The Insider Threat Alliance}
+                \begin{itemize}
+                    \item \textbf{Tipologia:} attivo/passivo
+    
+                    \item \textbf{Descrizione:} questa coalizione è composta da attaccanti con accesso privilegiato al sistema, che agiscono internamente per ottenere benefici personali o danneggiare l'organizzazione.
+                    Collaborano per compromettere le infrastrutture critiche e sfruttare le informazioni riservate.
+    
+                    \item \textbf{Risorse}
+                        \begin{itemize}
+                            \item Autorizzazioni elevate e conoscenza interna dei processi (Evil Insider)
+                            
+                            \vspace{3mm}
+    
+                            \item Comprensione approfondita dei protocolli crittografici e delle vulnerabilità (The Cryptographer)
+    
+                            \vspace{3mm}
+    
+                            \item Controllo completo sui dati e sulle risorse del server (Malevolent Server)
+                        \end{itemize}
+                \end{itemize}
+    
+            \item \textbf{Crypto Conspirators}
+                \begin{itemize}
+                    \item \textbf{Tipologia:} attivo
+    
+                    \item \textbf{Descrizione:} si concentra sull'attacco alla crittografia e alla sicurezza del sistema.
+                    Utilizzano competenze avanzate in crittografia, furto di identità e infiltrazione interna per compromettere la sicurezza
+    
+                    \item \textbf{Risorse}
+                        \begin{itemize}
+                            \item Competenze avanzate in crittografia e conoscenza dei protocolli di sicurezza (The Cryptographer)
+                            
+                            \vspace{3mm}
+    
+                            \item Accesso a informazioni personali rubate per ottenere accesso non autorizzato (Identity Thief)
+    
+                            \vspace{3mm}
+    
+                            \item Autorizzazioni elevate e accesso interno per facilitare gli attacchi (Evil Insider)
+                        \end{itemize}
+                \end{itemize}
+        \end{itemize}
+    
+    
+    \section{Proprietà}
+        L'obiettivo è sviluppare un sistema che consenta l'accesso remoto a servizi riservati agli utenti in possesso delle credenziali richieste.
+        In questo contesto, diverse autorità rilasciano credenziali agli utenti, i quali le utilizzano per accedere a servizi qualificati, ossia servizi limitati ai possessori di specifiche credenziali.
+        
+        Per garantire l'efficacia e la sicurezza del sistema, è necessario considerare diverse proprietà fondamentali: confidenzialità, integrità, trasparenza ed efficienza.
+        Queste proprietà non solo assicurano che il sistema funzioni correttamente, ma proteggono anche contro potenziali minacce e abusi.
+        
+        \subsection{Confidenzialità}
+            \begin{itemize}
+                \item \textbf{C1:} I dati sensibili degli utenti devono essere protetti, ovvero accessibili solo dalle parti autorizzate in modo controllato
+                
+                \item \textbf{C2:} Garantire la privacy delle comunicazioni tra gli utenti e i server che offrono i servizi, in modo che non sia possibile intercettare o rubare le credenziali trasmesse
+    
+                \item \textbf{C3:} Garantire la privacy delle comunicazioni tra gli utenti e le autorità di rilascio delle credenziali, in modo che non sia possibile carpire dati personali relativi agli utenti
+                
+                \item \textbf{C4:} Tutelare gli utenti contro i malintenzionati, di modo che questi ultimi non possano utilizzare l'identità di altri utenti, firmando certificati falsi o accedendo ai servizi sfruttando le loro credenziali
+            \end{itemize}
+    
+        \subsection{Integrità}
+            \begin{itemize}
+                    \item \textbf{I1:} Preservare l'integrità delle credenziali rilasciate, garantendo che non possano essere alterate o falsificate
+                
+                \item \textbf{I2:} I server devono garantire che le credenziali esibite dagli utenti siano verificabili e autentiche, ovvero rilasciate da autorità riconosciute come affidabili
+    
+                \item \textbf{I3:} Verificare che la CIE sia riconducibile all'utente che la utilizza
+                
+                \item \textbf{I4:} Se un servizio è rivolto ad un individuo in possesso di due credenziali allora non deve essere possibile per due utenti, ciascuno avente una sola credenziale, combinare le loro informazioni per accedere al servizio
+            \end{itemize}
+    
+        \subsection{Trasparenza}
+            \begin{itemize}
+                \item \textbf{T1:} Il sistema di autenticazione dovrebbe basarsi su algoritmi noti e verificabili, di modo da permettere una verifica di essi da parte degli utenti, rendendo arduo il processo di manomissione da parte di un malintenzionato, senza che quest'ultimo sia scoperto
+            
+                \item \textbf{T2:} Il processo di rilascio delle credenziali deve essere trasparente e verificabile da tutte le parti coinvolte, riducendo la dipendenza da terze parti fidate così da ridurre il rischio di abuso   
+                
+                \item \textbf{T3:} Assicurarsi che le politiche di accesso ai servizi siano chiare e comprensibili, consentendo agli utenti di sapere quali credenziali siano necessarie per accedere agli stessi, limitando così la possibilità di accessi non autorizzati
+    
+                \item \textbf{T4:} La fiducia in specifiche parti deve essere giustificata da motivazioni concrete, come la possibilità di rilevare e punire abusi o il preservare la buona reputazione
+            \end{itemize}
+    
+        \subsection{Efficienza}
+            \begin{itemize}
+                \item \textbf{E1:} Il sistema deve consentire ai server di controllare l'accesso utilizzando politiche avanzate e flessibili, permettendo di definire criteri di accesso complessi e specifici
+                
+                \item \textbf{E2:} Garantire che il processo di rilascio e verifica delle credenziali sia eseguito in modo rapido ed efficiente, riducendo al minimo i tempi di attesa e l'impatto sulle prestazioni del sistema
+                
+                \item \textbf{E3:} Assicurare che l'ottenimento delle credenziali tramite CIE avvenga in modo semplice e veloce, facilitando l'accesso remoto ai servizi digitali
+    
+                \item \textbf{E4:} Progettare il sistema in modo che possa gestire un grande numero di utenti e richieste contemporaneamente senza degradare le performance
+            \end{itemize}
+    
+    
+    \section{Completeness}
+        In questo paragrafo verrà definita la completeness, la quale illustra il comportamento del sistema nel caso in cui tutte le parti coinvolte si comportino onestamente.
+        
+        \noindent Nello specifico:
+
+        \begin{itemize}
+            \item l'utente possessore della CIE richiede le credenziali necessarie alle autorità di rilascio
+
+            \item le CA verificano la firma della CIE e l'identità dell'utente e, in caso positivo, emettono le credenziali 
+
+            \item l'utente detentore delle credenziali può quindi richiedere l'accesso ad un servizio specifico, istanziato su un server
+
+            \item il server sottopone l'utente ad un'autenticazione prima di permettere l'accesso al servizio
+
+            \item l'utente onesto accede al servizio
         \end{itemize}

@@ -1,23 +1,20 @@
 \chapter{WORK PACKAGE 2}
-In questo capitolo concentreremo la nostra attenzione nel presentare una soluzione che risponde al modello identificato nel \textit{Work Package 1 (WP1)}.
-L’obiettivo è quello di proporre un sistema che riesca a raggiungere un ragionevole compromesso tra efficienza, trasparenza, confidenzialità e sicurezza.
+    In questo capitolo verrà posta attenzione sul presentare una soluzione che risponde al modello identificato nel \textit{Work Package 1 (WP1)}.
+    L’obiettivo è di proporre un sistema che riesca a raggiungere un ragionevole compromesso tra efficienza, trasparenza, confidenzialità e integrità.
 
-\noindent Concentreremo la nostra attenzione sui seguenti problemi chiave:
-    \begin{itemize}
-        \item Richiesta e ottenimento della CIE
-        
-        \item Richiesta e ottenimento delle credenziali necessarie per l'accesso ai servizi specifici
+    \noindent Concentreremo la nostra attenzione sui seguenti problemi chiave:
+    
+    \begin{itemize}        
+        \item Richiesta e ottenimento, dalle CA, delle credenziali necessarie per l'accesso ai servizi specifici
         
         \item Autenticazione e accesso ai servizi qualificati
     
         \item Protezione della privacy e dell'integrità delle credenziali
-    
-        \item Minimizzazione del coinvolgimento di terze parti fidate
     \end{itemize}
 
 
     \section{Panoramica Generale di Funzionamento}
-        Innanzitutto, a valle di una richiesta apposita, viene emessa una CIE con il PIN associato per ogni utente.
+        Innanzitutto ogni utente possiede una CIE, con al suo interno un certificato X.509v3, ed il PIN ad essa associato.
         Ciascuno di essi, tramite l'utilizzo della CIE, può richiedere delle credenziali ad un'autorità di rilascio delle stesse.
         Esistono varie autorità che rilasciano credenziali agli utenti e, una volta entratone in possesso, è possibile utilizzarle per identificarsi e accedere ai servizi qualificati.
         È consentito, all’utente, l'accesso ai servizi qualificati solo se le credenziali soddisfano i requisiti di accesso imposti dal servizio stesso.
@@ -26,26 +23,29 @@ L’obiettivo è quello di proporre un sistema che riesca a raggiungere un ragio
     \section{Generazione e Utilizzo delle Credenziali}
         In questa sezione verrà sviluppato un protocollo per la generazione e l'utilizzo di un sistema di identificazione tramite credenziali per l'accesso a servizi digitali qualificati.
         Questo processo coinvolge i seguenti attori chiave: l'utente, l'autorità di rilascio delle credenziali e il server del servizio.
-        I partecipanti interagiscono con l'autorità per la richiesta e la generazione delle credenziali e con il server del servizio per usufruire dei servizi offerti.
-        Si inizierà descrivendo come un utente può richiedere una credenziale all'autorità, chiarendo anche il processo di rilascio telematico della stessa.
-        Successivamente, verrà delineato il contenuto e la struttura delle credenziali, affinché possano essere utilizzate come strumento digitale per l'identificazione e l'accesso ai servizi, mantenendo la massima riservatezza delle informazioni contenute.
+        Gli utenti interagiscono con la CA per la richiesta e l'ottenimento delle credenziali, e con il server per usufruire dei servizi offerti.
+        Si inizierà descrivendo come un utente può richiedere una credenziale all'autorità, chiarendone anche il processo di rilascio.
+        Successivamente, verrà delineato il contenuto e la struttura delle credenziali, affinché possano essere utilizzate come strumento digitale per l'identificazione e l'accesso ai servizi, mantenendo un'alta riservatezza delle informazioni contenute.
         Infine, analizzeremo il processo di identificazione e accesso a un servizio digitale.
                 
         \subsection{Supposizioni}
             Il funzionamento del protocollo proposto si basa sulle seguenti supposizioni:
 
             \begin{itemize}
-                \item L'utente ha ottenuto la CIE e il PIN associato
+                \item Le istituzioni che si occupano dell'emissione della CIE, con annesso il suo PIN, sono assunte come parte fidata
+            
+                \item Ogni utente dispone inizialmente della propria CIE e del PIN associato
 
-                \item L'autorità di rilascio è fidata, emette credenziali corrette e rispetta il protocollo descritto
+                \item Il certificato digitale presente nella CIE è di tipo X509v3
+                
+                \item All'interno del certificato sono presenti i dati che sono leggibili su una carta di identità
 
-                \item Le informazioni necessarie alla verifica delle credenziali sono pubbliche, incluse gli algoritmi e i protocolli utilizzati
+                \item Le autorità di rilascio sono fidate ed emettono credenziali corrette
 
-                \item L'autorità di rilascio possiede certificati validi per firmare le credenziali e per la comunicazione TLS con l'utente
+                \item Gli algoritmi e i protocolli utilizzati sono pubblici, così da avere maggiore trasparenza e dare modo agli utenti di verificarne gli aspetti critici
             \end{itemize}
 
             \noindent Si procede adesso con l’analisi dettagliata di quanto delineato fino a questo momento.
-
 
         \subsection{Processo di Richiesta e Rilascio delle Credenziali}
             
@@ -54,52 +54,143 @@ L’obiettivo è quello di proporre un sistema che riesca a raggiungere un ragio
                     \item Ogni utente genera una coppia di chiavi pubblica/privata
     
                     \item La chiave pubblica $pk_{utente}$ è generata in accordo all'algoritmo Gen(1$^n$)
-                    
-                    \item La chiave pubblica dell'utente è registrata presso le autorità competenti
                 \end{itemize}
             
-            \subsubsection{Richiesta delle Credenziali}
+            \subsubsection{Richiesta ed Emissione delle Credenziali}
                 \begin{itemize}
-                    \item  L'utente invia la sua chiave pubblica e la CIE alla CA
+                    \item Le comunicazioni tra le CA e gli utenti avvengono tramite canali cifrati con TLS 
+
+                    \item  L'utente invia il certificato X.509v3 relativo alla sua CIE alla CA, insieme alla richiesta della specifica credenziale
+
+                    \item La CA invia una \textit{challenge} $b$ di bit casuali inviandola all'utente
+
+                    \item L'utente inserisce il PIN della sua CIE e calcola l'hash $h = H(b)$ dei bit ricevuti \\
+                    \textbf{NOTA:} $H : \{ {0, 1 \} }^n \rightarrow \{ {0, 1\} }^{256}$ è una funzione hash di tipo SHA-256, con dominio illimitato e codominio di dimensioni pari a 256 bit
+
+                    \item Viene inviata una query $Sign_{sk_{CIE}}(PIN, b)$ alla CIE
+
+                    \item La CIE verifica il PIN e, se corretto, rilascia una firma $\sigma_{CIE}$ ECDSA del messaggio (la \textit{challenge}) $b$.
+
+                    \item L'utente, infine, invia la firma $\sigma_{CIE}$ all'autorità 
                     
-                    \item La CA verifica l'identità dell'utente e, se verificata, emette una credenziale firmata digitalmente (X.509) contenente informazioni specifiche
-    
-                    \item Ogni certificato X.509 emesso contiene un numero di serie univoco che identifica in modo univoco la credenziale associata all'utente
+                    \item La CA verifica l'identità dell'utente e, se valida, emette una credenziale firmata digitalmente, sotto forma di certificato X.509v3, contenente le informazioni specifiche richieste dal soggetto
                 \end{itemize}
-    
-            \subsubsection{Emissione della Credenziale}
-                \begin{itemize}
-                    \item L'autorità firma digitalmente la credenziale utilizzando la propria chiave privata, creando così un documento X.509 che attesta le informazioni specifiche dell'utente
-                \end{itemize}
-    
     
         \subsection{Processo di Identificazione e Accesso ai Servizi}
-            Quando un utente presenta una credenziale per accedere a un servizio, il servizio deve verificare che l'utente possieda effettivamente la chiave privata corrispondente alla chiave pubblica inclusa nel documento X.509.
+            Quando un utente presenta una credenziale per accedere a un servizio, il servizio deve verificare che l'utente possieda effettivamente la chiave privata utilizzata per firmare il documento X.509, corrispondente alla chiave pubblica inclusa nello stesso.
+            Anche in questo caso, le comunicazioni tra utenti e server sono protette da canali cifrati tramite TLS.
+    
+            \subsubsection{Autenticazione dell'Utente}
+                Quando l'utente desidera accedere a un servizio, utilizza lo schema di firma di Schnorr per autenticarsi al server.
+                Nello specifico, l'utente rappresenta il \textit{prover $P$}, mentre il server il \textit{verifier $V$}.
+                In questo modo, l'utente dovrà dimostrare al server di essere a conoscenza del segreto (la $sk_{utente}$, indicata con $x$) a partire dalla $pk_{utente}$ (indicata con $y = g^x$).
+                
+                \noindent Il protocollo si articola come segue:
+
+                \begin{itemize}
+                    \item l'utente seleziona un valore casuale $r \in \mathbb{Z}_q$, calcola $a = g^r$ e invia quest'ultimo al server
+
+                    \item il server sceglie una stringa casuale $c \in \mathbb{Z}_q$ e lo invia all'utente
+
+                    \item l'utente invia al server il valore $z = r + cx$, con $z \in \mathbb{Z}_q$
+                \end{itemize}
+
+                \noindent Il server, poiché $g^z = a y^c$, riesce a capire che, a richiedere il servizio, è la persona realmente in possesso delle credenziali.
     
             \subsubsection{Verifica delle Credenziali}
                 \begin{itemize}
-                    \item Il servizio decodifica la credenziale X.509 e verifica la firma digitale dell'autorità
+                    \item Il servizio riceve, dall'utente, la credenziale tramite certificato X.509 e ne verifica la firma digitale
+
+                    \item Verifica, inoltre, che il numero di serie della credenziale non sia incluso nell'elenco delle revocazioni più aggiornato (CRL)
     
                     \item Controlla che le informazioni contenute nella credenziale soddisfino i requisiti di accesso
-    
-                    \item Verifica che il numero di serie della credenziale non sia incluso nell'elenco delle revocazioni più aggiornato (CRL)
-                \end{itemize}
-    
-            \subsubsection{Autenticazione dell'Utente}
-                \begin{itemize}
-                    \item Quando l'utente desidera accedere a un servizio, utilizza la firma di Schnorr per autenticarsi al server
-    
-                    \item La firma di Schnorr permette di dimostrare la conoscenza della chiave privata senza rivelarla, aumentando così la sicurezza
                 \end{itemize}
     
             \subsubsection{Accesso ai Servizi}
                 \begin{itemize}
+                    \item Per garantire un accesso sicuro e affidabile ai servizi, è stata implementata una strategia anti-spam basata su puzzle parametrizzati, la quale funge da PoW (Proof of Work)
+                    
+                    \item Durante il processo di accesso, il server genera un puzzle matematico complesso che richiede l'elaborazione da parte dell'utente per essere risolto. La corretta risoluzione del puzzle costituisce quindi un requisito fondamentale per l'accesso ai servizi qualificati.
+
+                    \item Superato il puzzle parametrico, il client procede con l'autenticazione basata su Schnorr
+
+                    \item Una volta fatto ciò, il server verifica la firma dell'emittente del certificato e se le credenziali sono ancora valide
+                    
                     \item Se le credenziali soddisfano i requisiti di accesso imposti dal servizio e non sono state revocate, l'utente ottiene l'accesso al servizio richiesto
                     
                     \item Il server registra l'accesso dell'utente in modo sicuro e trasparente, mantenendo un log degli accessi per future verifiche
                 \end{itemize}
+
+
+        \subsection{Configurazione certificati X.509v3}
+            I certificati adottano la struttura standard, la quale prevede:
+            \begin{multicols}{2}
+                \begin{itemize}
+                    \item la specifica della versione;
+                        
+                    \item il numero seriale;
     
+                    \item il tipo di algoritmo di firma e i suoi parametri;
     
+                    \item la CA che ha emesso il certificato;
+    
+                    \item il periodo di validità, indicato da una data d'inizio e una di fine;
+    
+                    \item il richiedente;
+    
+                    \item informazioni sulla chiave pubblica del richiedente, ovvero l'algoritmo utilizzato e la chiave pubblica stessa;
+    
+                    \item ID univoco dell'autorità
+                        
+                    \item ID univoco soggetto
+                \end{itemize}
+            \end{multicols}
+                
+            \subsubsection{Certificato digitale interno alla CIE}
+                Per questo tipo di certificato sono presenti anche le seguenti estensioni:
+                
+                \begin{itemize}
+                    \item Key Usage: Digital Signature
+                    
+                    \item Extended Key Usage: Client Authentication
+                \end{itemize}
+
+                \noindent Inoltre, anche i dati anagrafici, presenti sulla CIE, sono incorporati nel documento:
+
+                \begin{multicols}{2}
+                    \begin{itemize}
+                        \item Comune o Ufficio Consolare emettitore
+                        
+                        \item Nome
+                        
+                        \item Cognome
+                        
+                        \item Luogo di nascita
+                        
+                        \item Data di nascita
+                        
+                        \item Sesso
+                        
+                        \item Statura
+                        
+                        \item Cittadinanza
+                        
+                        \item Codice fiscale
+                        
+                        \item Indirizzo di residenza
+                    \end{itemize}
+                \end{multicols}
+
+            \subsubsection{Certificato digitale per le credenziali}
+                In questo X.509v3, sono presenti le seguenti estensioni:
+                
+                \begin{itemize}
+                    \item Custom Extension: Credenziale Richiesta dall'Utente
+                    
+                    \item CRL Distribution Point: URL della lista di revoca dei certificati (CRL)
+                \end{itemize}
+                
+        
         \subsection{Politiche di Revoca e Aggiornamento della Certificate Revocation List (CRL)}
             \begin{itemize}
                 \item Ogni certificato X.509 emesso contiene un numero di serie univoco
@@ -108,29 +199,59 @@ L’obiettivo è quello di proporre un sistema che riesca a raggiungere un ragio
     
                 \item La CA mantiene un database dei numeri di serie dei certificati emessi e revocati
     
-                \item Quotidianamente, la CA genera una Certificate Revocation List (CRL) contenente i numeri di serie dei certificati revocati e la firma digitale della CA
+                \item Periodicamente, la CA genera una Certificate Revocation List (CRL) contenente i numeri di serie dei certificati revocati e la firma digitale della CA
     
                 \item La CRL include anche un campo CRL Distribution Point che indica l'URL da cui è possibile ottenere l'ultima versione della CRL
     
                 \item I server dei servizi verificano la validità delle credenziali confrontando il numero di serie della credenziale con la CRL più aggiornata
             \end{itemize}
-    
-    
-    \section{Minimizzazione del Coinvolgimento di Terze Parti Fidate}
-        Per minimizzare il coinvolgimento di terze parti fidate durante gli accessi ai servizi:
-        
-        \begin{itemize}
-            \item Le credenziali sono emesse una sola volta come documenti X.509 e non richiedono la verifica continua da parte delle autorità di rilascio durante ogni accesso
+
+        \subsection{PoW: Puzzle Parametrizzato}
+            Quando l'utente cerca di connettersi al server erogatore di un servizio, deve innanzitutto risolvere un puzzle parametrizzato.
+            Per la sua costruzione si è scelto SHA-256, ottenendo $Z$, un sottoinsieme del codominio della CRHF, composto quindi da stringhe di 256 bit.
+            L’obiettivo è quello di chiedere all'utente di trovare un valore $x$ tale che $H(rand||x) \in \mathbb{Z}$.
             
-            \item I server dei servizi qualificati verificano autonomamente i documenti X.509 delle credenziali utilizzando le informazioni pubbliche rese disponibili dalle autorità di rilascio
+
+    \section{Specifiche degli algoritmi utilizzati}
+        \subsection{Gen}
+            L’algoritmo $Gen(1^n)$ è utilizzato per generare la coppia di chiavi pubblica e privata.
+            Tramite questo algoritmo si va ad istanziare il problema del logaritmo discreto ($DLog$) ottenendo $\mathbb{G}_q$, $q$, $g$ come informazioni, dove:
+
+            \begin{itemize}
+                \item $\mathbb{G}_q$ è un gruppo ciclico di ordine primo $q$
+
+                \item $q$ è il numero di elementi presenti nel gruppo
+
+                \item $g$ è un generatore del gruppo
+            \end{itemize}
+
+            \noindent A questo punto, è possibile selezionare un certo valore $x \in \mathbb{Z}_q$ e calcolare $y = g^x \bmod{q}$.
             
-            \item L'utilizzo di firme digitali e connessioni TLS garantisce la sicurezza e l'integrità delle comunicazioni
-        \end{itemize}
-    
+            \noindent La chiave pubblica, indicata con $pk$, è:
+            $$\langle G_q, q, g, y \rangle$$
+            
+            \noindent La chiave privata, indicata con $sk$, è:
+            $$\langle G_q, q, g, x \rangle$$
+
+        \subsection{Sign$_{sk}$}
+            $Sign_{sk}(m)$ è un algoritmo di firma digitale, in particolare, si fa riferimento allo schema di firma di Schnorr.
+            Quest'ultimo, prendendo in input un messaggio $m$ ed una chiave privata $sk$, restituisce una coppia $(z, a)$, rappresentante la firma indicata generalmente con $\sigma$, dove:
+
+            \begin{itemize}
+                \item $a$ rappresenta un contributo casuale del gruppo, tale che $a = g^r \bmod{q}$, con $r \in \mathbb{Z}_q$
+
+                \item $z = r + H(y||a||m) x$, dove $H(\cdot)$ è un \textit{random oracle}, implementato con SHA-256
+            \end{itemize}
+
+        \subsection{Verify$_{pk}$}
+            La funzione $Vrfy_{pk}(m, \sigma) : {0, 1}$, prendendo in input una chiave pubblica $pk$, un messaggio $m$ e una firma $\sigma = (z, a)$, verifica che $\sigma$ sia una firma valida per $m$, ciò avviene verificando che $g^z \equiv ay^c \bmod{q}$.
+
     
     \section{Protezione della Privacy e Integrità delle Credenziali}
         Per proteggere la privacy degli utenti e l'integrità delle credenziali:
         \begin{itemize}
+            \item L'utilizzo di firme digitali e connessioni TLS garantisce la sicurezza e l'integrità delle comunicazioni
+            
             \item Le credenziali sono emesse come documenti X.509 e contengono solo le informazioni strettamente necessarie per l'accesso ai servizi, riducendo l'esposizione di dati personali
                 
              \item L'identità dell'utente non è rivelata al server del servizio qualificato attraverso i documenti X.509 delle credenziali, a meno che non sia strettamente necessario
@@ -143,22 +264,5 @@ L’obiettivo è quello di proporre un sistema che riesca a raggiungere un ragio
         La soluzione proposta mira a raggiungere un compromesso tra efficienza, trasparenza, confidenzialità e sicurezza.
         Il sistema descrive dettagliatamente le azioni delle parti oneste coinvolte, garantendo che le credenziali siano emesse e verificate in modo sicuro e trasparente.
         L'uso di certificati X.509 firmati digitalmente dalle autorità di certificazione (CA) assicura che le credenziali siano autentiche e non alterabili.
-        Inoltre, l'adozione della firma di Schnorr per l'autenticazione al server minimizza il coinvolgimento di terze parti fidate durante l'accesso ai servizi, proteggendo la privacy e l'integrità degli utenti.
+        Inoltre, l'adozione del protocollo TLS per le comunicazioni e dello schema di firma di Schnorr per l'autenticazione, minimizza il coinvolgimento di terze parti fidate durante l'accesso ai servizi, proteggendo la privacy e l'integrità degli utenti.
         Questa architettura bilancia le esigenze di sicurezza e confidenzialità con la necessità di un sistema efficiente e utilizzabile, riducendo al minimo i rischi associati agli attacchi su larga scala e garantendo un alto livello di affidabilità e trasparenza.
-    
-
-    \section{Proposta di Soluzione}
-        %Inserire testo
-
-        \subsection{Possibile vulnerabilità}
-            % Inserire testo
-
-        \subsection{Proposta \#2 di Soluzione}
-            % Inserire nuove info su 
-
-
-    \section{Specifiche degli algoritmi utilizzati}
-        % Inserire testo
-
-        \subsection{Gen}
-            % Inserire testo
