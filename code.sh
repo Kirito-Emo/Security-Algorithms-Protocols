@@ -4,7 +4,7 @@ set -e
 set -o pipefail
 
 # Main directory
-main_folder="cert_management"
+main_folder="~/cert_management"
 mkdir -p "$main_folder"
 cd "$main_folder" || exit
 
@@ -105,7 +105,7 @@ EOF
         -CAkey "$keys_folder/$ca_key.key" \
         -CAcreateserial \
         -out "$certs_folder/credentialed_cert.pem" \
-        -days 365 \
+        -days 1 \
         -sha256 \
         -extfile "$ext_file" \
         -extensions ext_section
@@ -119,7 +119,9 @@ start_tls_server() {
     local server_cert="$2"
     local ca_cert="$3"
     
-    openssl s_server -accept 8443 -key "$keys_folder/$server_key.key" -cert "$certs_folder/$server_cert.pem" -CAfile "$ca_certs_folder/$ca_cert.pem" -Verify 1 & server_pid=$!
+    # Starting the TLS server in the background
+    openssl s_server -accept 443 -key "$keys_folder/$server_key.key" -cert "$certs_folder/$server_cert.pem" -CAfile "$ca_certs_folder/$ca_cert.pem" -Verify 1 &
+    server_pid=$! # Storing server PID
     
     echo "TLS server started with PID $server_pid"
 }
@@ -129,8 +131,10 @@ connect_to_tls_server() {
     local client_key="$1"
     local client_cert="$2"
     local ca_cert="$3"
-    
-    echo "Hello from the TLS client" | openssl s_client -connect localhost:8443 -key "$keys_folder/$client_key.key" -cert "$certs_folder/$client_cert.pem" -CAfile "$ca_certs_folder/$ca_cert.pem"
+        
+    openssl s_client -connect localhost:443 -key "$keys_folder/$client_key.key" -cert "$certs_folder/$client_cert.pem" -CAfile "$ca_certs_folder/$ca_cert.pem"
+
+    echo "Hello from the TLS client"
 }
 
 # Function for user-CA interaction
@@ -164,7 +168,6 @@ user_server_interaction() {
 
     # Connect to the TLS server with the credentialed certificate
     connect_to_tls_server "$user_key" "$user_cred_cert" "$ca_cert"
-    echo "Connection to server established"
 }
 
 # Function to configure Apache with HTTPS (TLS)
@@ -174,47 +177,53 @@ configure_apache_tls() {
     local ca_cert="$3"
 
     # Copy server key and cert to appropriate directories
-    sudo mkdir -p /etc/ssl/private /etc/ssl/certs
-    sudo cp "$keys_folder/$server_key.key" /etc/ssl/private/server.key
-    sudo cp "$certs_folder/$server_cert.pem" /etc/ssl/certs/server.crt
-    sudo cp "$ca_certs_folder/$ca_cert.pem" /etc/ssl/certs/ca.crt
+    sudo cp "$keys_folder/$server_key.key" /etc/pki/tls/private/server.key
+    sudo cp "$certs_folder/$server_cert.pem" /etc/pki/tls/certs/server.crt
+    sudo cp "$ca_certs_folder/$ca_cert.pem" /etc/pki/tls/certs/ca.crt
 
-    # Apache virtual host configuration file
-    sudo tee /etc/apache2/sites-available/default-ssl.conf > /dev/null <<EOF
-<IfModule mod_ssl.c>
-    <VirtualHost _default_:443>
-        ServerAdmin webmaster@localhost
-        DocumentRoot /var/www/html
+    # Apache virtual host configuration file for SSL
+    sudo tee /etc/httpd/conf.d/ssl-aps.conf > /dev/null <<EOF
+<VirtualHost _default_:443>
+    ServerAdmin webmaster@localhost
+    DocumentRoot /var/www/html
 
-        ErrorLog \${APACHE_LOG_DIR}/error.log
-        CustomLog \${APACHE_LOG_DIR}/access.log combined
+    ErrorLog logs/ssl_error_log
+    TransferLog logs/ssl_access_log
+    LogLevel warn
 
-        SSLEngine on
+    SSLEngine on
 
-        SSLCertificateFile      /etc/ssl/certs/server.crt
-        SSLCertificateKeyFile   /etc/ssl/private/server.key
+    SSLCertificateFile /etc/pki/tls/certs/server.crt
+    SSLCertificateKeyFile /etc/pki/tls/private/server.key
+    SSLCACertificateFile /etc/pki/tls/certs/ca.crt
 
-        SSLCACertificateFile    /etc/ssl/certs/ca.crt
+    <FilesMatch "\.(cgi|shtml|phtml|php)$">
+        SSLOptions +StdEnvVars
+    </FilesMatch>
 
-        <FilesMatch "\.(cgi|shtml|phtml|php)$">
-            SSLOptions +StdEnvVars
-        </FilesMatch>
-        
-        <Directory /usr/lib/cgi-bin>
-            SSLOptions +StdEnvVars
-        </Directory>
+    <Directory "/var/www/cgi-bin">
+        SSLOptions +StdEnvVars
+    </Directory>
 
-        BrowserMatch "MSIE [2-6]" \
-            nokeepalive ssl-unclean-shutdown \
-            downgrade-1.0 force-response-1.0
-        BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
-    </VirtualHost>
-</IfModule>
+    SetEnvIf User-Agent ".*MSIE.*" \
+             nokeepalive ssl-unclean-shutdown \
+             downgrade-1.0 force-response-1.0
+
+    CustomLog logs/ssl_request_log \
+              "%t %h %{SSL_PROTOCOL}x %{SSL_CIPHER}x \"%r\" %b"
+
+    <Location />
+        SSLVerifyClient require
+        SSLVerifyDepth 1
+    </Location>
+</VirtualHost>
 EOF
 
-    # Enable the HTTPS site and restart Apache
-    sudo a2ensite default-ssl
-    sudo systemctl restart apache2
+    # Ensure that SSL module is enabled
+    sudo sed -i 's/^#LoadModule ssl_module/LoadModule ssl_module/' /etc/httpd/conf.modules.d/00-ssl.conf
+
+    # Restart Apache to apply changes
+    sudo systemctl restart httpd
 }
 
 ### Main Script ###
@@ -256,16 +265,13 @@ fi
 
 echo "CA certificate created."
 
-# User-CA interaction: create the user's certificate with credential
-user_ca_interaction "user_key" "ca_key" "ca_cert" "/CN=User/O=MyOrganization/C=IT" "Nato a Pordenone" "$user_pin"
-
 # Generate the server certificate signed by the CA
-create_certificate_request "server_key" "$certs_folder/server_request.csr" "/CN=localhost"
-
+server_name="example.com"
+create_certificate_request "server_key" "$certs_folder/server_request.csr" "/CN=$server_name"
 sign_certificate_request "$certs_folder/server_request.csr" "ca_key" "ca_cert" "$certs_folder/server_cert.pem" 365 "$ca_certs_folder/ca_config.cnf"
 
-# Clean up temporary CSR files
-rm -f "$certs_folder/user_request.csr" "$certs_folder/server_request.csr"
+# User-CA interaction: create the user's certificate with credential
+user_ca_interaction "user_key" "ca_key" "ca_cert" "/CN=User/O=MyOrganization/C=IT" "CredentialData" "$user_pin"
 
 # Start the TLS server
 start_tls_server "server_key" "server_cert" "ca_cert"
@@ -280,11 +286,18 @@ configure_apache_tls "server_key" "server_cert" "ca_cert"
 # openssl ca -revoke user_cert.pem -keyfile ca_key.key -cert ca_cert.pem
 # openssl ca -gencrl -keyfile ca_key.key -cert ca_cert.pem -out ca.crl
 
-# Stop the TLS server (uncomment if needed)
-# kill "$server_pid"
-# echo "TLS server stopped with PID $server_pid"
+# TLS server terminated
+echo "Connection to TLS server with PID $server_pid terminated successfully"
 
-# Remove server files (uncomment if needed)
-# sudo rm /etc/ssl/private/server.key
-# sudo rm /etc/ssl/certs/server.crt
-# sudo rm /etc/ssl/certs/ca.crt
+# Remove server files
+echo "Do you want to delete the server files? (y/n)"
+read -r user_input2
+if [ "$user_input2" = "y" ]; then
+    sudo rm /etc/httpd/conf.d/ssl-aps.conf
+    sudo rm /etc/pki/tls/private/server.key
+    sudo rm /etc/pki/tls/certs/server.crt
+    sudo rm /etc/pki/tls/certs/ca.crt
+    echo "Server files deleted"
+else
+    echo "Server files were not deleted"
+fi
