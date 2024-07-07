@@ -4,7 +4,7 @@ set -e
 set -o pipefail
 
 # Main directory
-main_folder="~/cert_management"
+main_folder="./cert_management"
 mkdir -p "$main_folder"
 cd "$main_folder" || exit
 
