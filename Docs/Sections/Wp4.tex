@@ -1,2 +1,92 @@
 \chapter{WORK PACKAGE 4}
-    
+    \section{Introduzione al Work Package 4}
+        In questa sezione si è analizzata l'implementazione pratica delle specifiche definite nel (WP2), all'interno del quale è stato delineato un quadro teorico per la generazione e l'utilizzo delle credenziali attraverso un sistema di identificazione basato su certificati X.509v3 e aggiornamento delle liste di revoca degli stessi (CRL).
+        È stato sviluppato uno script in linguaggio \texttt{bash}, utilizzando il set di comandi predisposto dalla libreria \texttt{openSSL}, per implementare queste specifiche, garantendo che il sistema proposto possa gestire in modo sicuro ed efficiente l'autenticazione e l'accesso ai servizi digitali.
+        In particolar modo, ci si è focalizzati sulla generazione di coppie di chiavi privata-pubblica per CA, utente e server, dopodiché il focus è stato spostato su configurazione dei certificati, gestione delle credenziali e connessioni TLS, assicurando che ogni componente del sistema funzioni in conformità con quanto descritto nel \textit{WP2}.
+
+    \section{Inizializzazione e Configurazione Iniziale}
+        \subsection{Variabili e Cartelle}
+            Il codice inizia definendo variabili per le cartelle principali e creando queste cartelle se non esistono già. Queste includono:
+
+            \begin{itemize}
+                \item \texttt{cert\_management}: la cartella principale per la gestione dei certificati.
+                
+                \item Sottocartelle:
+                    \begin{itemize}
+                        \item \texttt{keys}: contiene le coppie di chiavi private-pubbliche di CA, utente e server e anche il file di configurazione personalizzato per le credenziali;
+                        
+                        \item \texttt{certificates}: contiene le richieste di certificato e i certificati generati per utente e server;
+                        
+                        \item \texttt{ca\_certificates}: contiene i certificati dell'autorità di certificazione (CA), la lista dei numeri seriali relativi ai certificati emessi, il file di configurazione per i certificati X.509v3 e la possibile CRL.
+                    \end{itemize}
+            \end{itemize}
+
+        \subsection{Definizione del PIN CIE}
+            Il PIN CIE (\texttt{user\_pin}) è impostato di default a \texttt{1234}.
+
+    \section{Generazione di Chiavi RSA}
+            Per la generazione di chiavi RSA è stata predisposta una funzione apposita (\texttt{generate\_rsa\_keys()}), il cui funzionamento prevede:
+
+            \begin{itemize}
+                \item la generazione di una chiave privata su 2048 bit;
+                \item l'estrazione di una chiave pubblica corrispondente.
+            \end{itemize}
+
+        \subsection{Generazione chiave ECDSA}
+            È stata altresì predisposta una funzione per la generazione di chiavi ECDSA (\texttt{generate\_ecdsa\_keys()}), la quale non viene utilizzata concretamente nello script, ma è possibile implementarla per ottenere il certificato interno alla CIE, sfruttando un modulo dedicato e un lettore di smart-card. \\
+
+    \section{Funzioni di Gestione di Certificati}
+        \subsection{Creazione e Firma di Richieste di Certificato}
+            \texttt{create\_certificate\_request}: crea una richiesta di certificato utilizzando una chiave specificata e la sottopone alla CA per la firma;
+
+            \texttt{sign\_certificate\_request}: firma una richiesta di certificato con la chiave della CA, generando il certificato effettivo. \\
+
+            \noindent Queste funzioni utilizzano OpenSSL per gestire le operazioni di crittografia asimmetrica e la creazione di certificati X.509v3.
+
+        \subsection{Creazione di Certificati con Credenziali}
+            \texttt{create\_credentialed\_certificate}: crea un certificato che include dati di credenziali, come specificato dall'utente tramite il file di configurazione personalizzata \texttt{credential\_ext.cnf}.
+            Questa funzione include la generazione di una richiesta di certificato e l'inclusione di una firma ECDSA, la quale è ottenuta tramite un'interazione con la CIE.
+
+    \section{Gestione di Server TLS}
+        \subsection{Avvio e Connessione al Server TLS}
+            \texttt{start\_tls\_server}: avvia un server TLS utilizzando la chiave privata e il certificato dello stesso, validato dalla CA;
+
+            \texttt{connect\_to\_tls\_server}: permette la connessione a un server TLS da parte di un client, utilizzando la chiave privata e il certificato di quest'ultimo, verificando l'autenticità dello stesso tramite il certificato della CA.
+
+    \section{Configurazione di Apache con HTTPS (TLS)}
+        \subsection{Configurazione del Server Apache}
+            \texttt{configure\_apache\_tls}: configura Apache per utilizzare HTTPS, copiando le chiavi e i certificati necessari nei percorsi appositi del sistema operativo e configurando il file di virtual host per utilizzare SSL/TLS \footnote{La configurazione del server Apache risulta funzionante solo su sistemi Red-Hat based, nello specifico le piattaforme di testing utilizzate si basano su Fedora 39 e Fedora 40.}.
+
+    \section{Interazioni Utente-CA e Utente-Server}
+        \texttt{user\_ca\_interaction}: gestisce l'interazione tra l'utente e la CA per la richiesta e la firma di certificati;
+
+        \texttt{user\_server\_interaction}: gestisce l'interazione tra l'utente e il server.
+
+    \section{Configurazione della CA}
+        \subsection{Definizione delle Politiche di Certificazione}
+            Viene creato un file di configurazione (\texttt{ca\_config.cnf}) che specifica le politiche di certificazione per la CA, inclusi i vincoli di chiave e l'identificatore del soggetto.
+
+    \section{Flusso Principale dello Script}
+        \subsection{Sequenza Operativa}
+            Lo script inizia generando le chiavi per la CA, l'utente e il server, poi procede a:
+
+            \begin{itemize}
+                \item creare un certificato per la CA, se non è già presente, altrimenti riutilizza lo stesso, se ancora valido;
+                
+                \item gestire l'interazione tra l'utente e la CA per richiedere e firmare certificati;
+                
+                \item generare un certificato per il server;
+                
+                \item avviare un server TLS e consentire l'interazione tra utente e server attraverso connessioni 
+                sicure;
+                
+                \item configurare Apache per utilizzare HTTPS;
+                
+                \item consentire all'utente di interrompere e rimuovere i file del server.
+            \end{itemize}
+
+    \section{Revoche e Pulizia}
+        Lo script include anche operazioni per la revoca dei certificati e la generazione di elenchi di revoca (CRL), se necessario, oltre a pulire e rimuovere i file temporanei o non più necessari.
+
+    \section{Output Script}
+        \lstinputlisting{output.txt}

@@ -70,7 +70,7 @@
                     In questo caso, non vi è alcun pericolo per l'integrità delle informazioni circolanti nei canali di comunicazione;
 
                     \item nel secondo caso, invece, assumendo un possibile attaccante all'interno dei server, non è possibile garantire l'integrità.
-                    Si immagini un caso d'esempio tale per cui un attaccante interno (\textit{Evil Insider} ad un server, visionando in chiaro le credenziali degli utenti, raccolga le informazioni sensibili al fine di strutturare il profilo dell'utente e rivendere i dati personali o utilizzarli per scopi illeciti. \\
+                    Si immagini un caso d'esempio tale per cui un attaccante interno (\textit{Evil Insider}) ad un server, visionando in chiaro le credenziali degli utenti, raccolga le informazioni sensibili al fine di strutturare il profilo dell'utente e rivendere i dati personali o utilizzarli per scopi illeciti. \\
                     A causa della centralizzazione del sistema non è possibile difendersi totalmente da questo tipo di attacchi, ma è possibile limitarli parzialmente tramite l'adozione di log, che vadano a mantenere una lista della transazioni effettuate, e controlli incrociati sulle attività svolte
                 \end{enumerate}
             
@@ -111,7 +111,7 @@
             Inoltre, l'adozione di log per le transizioni potrebbe migliorare ulteriormente questo scenario, sfavorendo la generazione di credenziali false o alterate
 
             \item \textbf{T3:} questa proprietà è garantita dall'architettura del sistema, in quanto ogni server, che eroga un servizio specifico, richiede delle credenziali all'utente, che desidera connettersi ad esso.
-            Tuttavia, è possibile, da parte dell'utente, fornire solo ed esclusivamente le credenziali necessarie per l'accesso al servizio, evitando così di divulgare informazioni superflue alla fruizione.
+            Tuttavia, è possibile, da parte dell'utente, fornire solo ed esclusivamente le credenziali necessarie per l'accesso al servizio, evitando così di divulgare informazioni superflue alla fruizione
 
             \item \textbf{T4:} il sistema prevede l'utilizzo dello schema di firma di Schnorr in accoppiata con canali TLS, che garantisce l'autenticità della fonte tramite \textit{Zero Knowledge Proof}, per i certificati digitali.
             Inoltre, i certificati hanno una scadenza fissa e, come ulteriore protezione, nel caso in cui un utente notasse un abuso di credenziali legate al proprio profilo, potrebbe richiederne la revoca (e le CA hanno le CRL).
@@ -146,7 +146,7 @@
 
             \item \textbf{E3:} anche qui, l'utilizzo di certificati X.509v3, permette un'alta velocità di autenticazione, senza sacrificare la sicurezza nella comunicazione, in quanto la CIE è protetta dal PIN, usato per ottenerne una firma ECDSA del certificato interno 
 
-            \item \textbf{E4:} Il processo di autenticazione ed identificazione dell'utente richiede lo scambio di 3 messaggi con il server più qualche esponenziazione modulare e la verifica della firma.
+            \item \textbf{E4:} Il processo di autenticazione ed identificazione dell'utente richiede lo scambio di 3 messaggi con il server più la verifica della firma.
             Ciò che potrebbe rallentare in parte il sistema è l'adozione del puzzle parametrico prima dell'accesso ad un servizio, difatti questo arreca un costo computazionale al server e richiede l'interazione dell'utente.
             Tuttavia, si è preferito l'utilizzo di questo algoritmo per evitare eventuali problemi legati ad attacchi di tipo DoS/DDoS, favorendo quindi la sicurezza e l'integrità dell'architettura di sistema
         \end{enumerate}

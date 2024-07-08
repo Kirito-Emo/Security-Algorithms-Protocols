@@ -1,0 +1,187 @@
+Generating RSA keys for ca_key...
+RSA keys generated for ca_key.
+
+Generating RSA keys for user_key...
+RSA keys generated for user_key.
+
+Generating RSA keys for server_key...
+RSA keys generated for server_key.
+
+Creating CA certificate...
+
+Creating certificate request for ca_key...
+Certificate request created for ca_key.
+
+CA certificate (./ca_certificates/ca_cert.pem) not found. Creating...
+CA certificate created.
+
+Creating certificate request for server_key...
+Certificate request created for server_key.
+
+Signing certificate request ./certificates/server_request.csr...
+Certificate request signed and certificate generated.
+
+Creating certificate request for user_key...
+Certificate request created for user_key.
+
+Signing certificate request ./certificates/user_request.csr...
+Certificate request signed and certificate generated.
+
+Creating certificate request for user_key...
+Certificate request created for user_key.
+
+Creating credentialed certificate for ./certificates/user_cert.pem...
+Credentialed certificate created for ./certificates/user_cert.pem.
+
+TLS server started with PID 141804
+
+Schnorr verification in progress...
+Schnorr verification successfully completed
+
+Using default temp DH parameters
+   0 items in the session cache
+   0 client connects (SSL_connect())
+   0 client renegotiates (SSL_connect())
+   0 client connects that finished
+   0 server accepts (SSL_accept())
+   0 server renegotiates (SSL_accept())
+   0 server accepts that finished
+   0 session cache hits
+   0 session cache misses
+   0 session cache timeouts
+   0 callback cache hits
+   0 cache full overflows (128 allowed)
+CONNECTED(00000003)
+---
+Certificate chain
+ 0 s:CN=example.com
+   i:CN=CA-Root, O=MyOrganization, C=IT
+   a:PKEY: rsaEncryption, 2048 (bit); sigalg: RSA-SHA256
+   v:NotBefore: Jul  7 17:29:40 2024 GMT; NotAfter: Jul  7 17:29:40 2025 GMT
+ 1 s:CN=CA-Root, O=MyOrganization, C=IT
+   i:CN=CA-Root, O=MyOrganization, C=IT
+   a:PKEY: rsaEncryption, 2048 (bit); sigalg: RSA-SHA256
+   v:NotBefore: Jul  7 17:29:40 2024 GMT; NotAfter: Jul  7 17:29:40 2025 GMT
+---
+Server certificate
+-----BEGIN CERTIFICATE-----
+MIIDHTCCAgWgAwIBAgITQvUYODdX4TI5MzYvFVAkpZX6/zANBgkqhkiG9w0BAQsF
+ADA4MRAwDgYDVQQDDAdDQS1Sb290MRcwFQYDVQQKDA5NeU9yZ2FuaXphdGlvbjEL
+MAkGA1UEBhMCSVQwHhcNMjQwNzA3MTcyOTQwWhcNMjUwNzA3MTcyOTQwWjAWMRQw
+EgYDVQQDDAtleGFtcGxlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoC
+ggEBAKjxaBNm4qgVm/aRx6uVhfZtS0zkv2pxVwj1MqmpSMDSDpuxDKbd7Z7JE3s4
+AspOo4LIcBzX//zuq6oE9MdIUJPBuCwQgxF0NrhX5e9t5/ezRY6j0hgYK9da/40S
+qLnVk32GcFZqPjHBT8gkNb6RBz4dQQRYQVYzp7LNVcXM9xWepoUEjBdOUaH2zVh6
+7ZC3cxViIYvd3fyuhUUrYasxoRn7ie2c0ZVufh/ncnC2V9mueDnsdTKgc1zOienW
+kZI6P9QYS2QwchkwlZXl9Exm+6V/kQXtoS7wur9dl7nMH1Hi0PH0LmjBzmMS1ylh
+fdjshAHkf3qzaRdpwnfhIjU+DRsCAwEAAaNCMEAwHQYDVR0OBBYEFN3uJRIJxgFf
+UvEnDkcOpEM/BcbrMB8GA1UdIwQYMBaAFCQNlVcYn97v7yNsULo8jqUcmY0FMA0G
+CSqGSIb3DQEBCwUAA4IBAQArCe9LyZC5JP0cZQTVvsKDMiyvDlfvdMsf3OmW92/U
+kFeeqWW6+AIDDB5nn0gTev6D7DBAzTYe5vX3VJQgkzoBuSQySRB4eHqMfwoOy3Bl
+5GwSKEfOzbF7qvgQKAu351hS93NoDviqeCs9Qo2M47M57v3080tWRJNwOSz6SOgY
+SCzJ/VAyn0Dfc1HhLxM8G8N7Z1KeEEzND4+5mX9cHAwUZwvGxoQ5aWVQlog8Gh14
+G2YHxFF9oc4sdlOVEJbjcUWm1tScJ7ZoVhdgOubewAyXmarqJWHHKBZBm3Qw7uHf
+ubdniGL5NIl8YNMmTHEviG6EH2AK3TY7MiVb7c8aGMpk
+-----END CERTIFICATE-----
+subject=CN=example.com
+issuer=CN=CA-Root, O=MyOrganization, C=IT
+---
+No client certificate CA names sent
+Peer signing digest: SHA256
+Peer signature type: RSA-PSS
+Server Temp Key: X25519, 253 bits
+---
+SSL handshake has read 2165 bytes and written 382 bytes
+Verification error: unsuitable certificate purpose
+---
+New, TLSv1.3, Cipher is TLS_AES_256_GCM_SHA384
+Server public key is 2048 bit
+This TLS version forbids renegotiation.
+Compression: NONE
+Expansion: NONE
+No ALPN negotiated
+Early data was not sent
+Verify return code: 26 (unsuitable certificate purpose)
+---
+---
+Post-Handshake New Session Ticket arrived:
+SSL-Session:
+    Protocol  : TLSv1.3
+    Cipher    : TLS_AES_256_GCM_SHA384
+    Session-ID: 496427A89F32953216A2C8BD408054E5480EA5D45F3F2F838BF0D9F7AB38A5A5
+    Session-ID-ctx: 
+    Resumption PSK: 
+6F71B53AA69DF193880420907C5C165F42CF8B164AF5996BE53F957FA6C1EB5A895C5DAA2FB9FCDD00552F7D2E060E5C
+    PSK identity: None
+    PSK identity hint: None
+    SRP username: None
+    TLS session ticket lifetime hint: 300 (seconds)
+    TLS session ticket:
+    0000 - c2 03 99 47 4d 5d bf 6e-51 ac 79 7d d2 6a 57 5d   ...GM].nQ.y}.jW]
+    0010 - e1 69 73 b2 18 07 2a fb-18 19 b3 9f 08 2c 21 2d   .is...*......,!-
+    0020 - 5e ca ed 41 bd 14 cf 32-d2 1c 02 14 4d 83 a3 77   ^..A...2....M..w
+    0030 - 48 41 97 0d 8d 1a 3b 2f-19 84 46 a0 e6 49 c6 95   HA....;/..F..I..
+    0040 - 41 60 8b b0 aa eb 8e 89-15 49 b6 f8 31 0b 05 b5   A`.......I..1...
+    0050 - 1c eb 0b 8a 8c d2 51 e4-43 09 90 aa f3 7f ec 14   ......Q.C.......
+    0060 - 68 3b 5c f0 3a ff 27 20-93 2e fc 0b d9 d6 9e c3   h;\.:.' ........
+    0070 - cb 36 c7 00 ce 44 d1 6a-1b b1 a9 d5 f9 5f 59 2f   .6...D.j....._Y/
+    0080 - f2 2c 42 ba e7 46 0d 09-83 a8 d4 f9 ee c1 b0 3b   .,B..F.........;
+    0090 - ec e1 80 45 e6 92 62 39-b7 58 23 4e 4d 5f b6 cc   ...E..b9.X#NM_..
+    00a0 - 31 a1 05 0d ce 52 40 d2-f2 d6 5f 05 51 0a fb a4   1....R@..._.Q...
+    00b0 - 10 e2 6e 23 43 cd d2 35-59 00 17 0c e9 16 eb dd   ..n#C..5Y.......
+    00c0 - 2b 13 58 28 b6 d7 45 7d-5f b4 2a a8 a5 a3 d3 63   +.X(..E}_.*....c
+    00d0 - a9 13 3b c3 50 ac 65 45-b7 30 04 01 aa db ee 65   ..;.P.eE.0.....e
+    00e0 - 5f f6 1e a6 e9 aa 42 49-94 43 06 8e e9 76 c2 63   _.....BI.C...v.c
+
+    Start Time: 1720382226
+    Timeout   : 7200 (sec)
+    Verify return code: 26 (unsuitable certificate purpose)
+    Extended master secret: no
+    Max Early Data: 0
+---
+read R BLOCK
+---
+Post-Handshake New Session Ticket arrived:
+SSL-Session:
+    Protocol  : TLSv1.3
+    Cipher    : TLS_AES_256_GCM_SHA384
+    Session-ID: 92EC9111655A1049A01863B4417C48F732F62F129EE38F11D4F85655DF66803B
+    Session-ID-ctx: 
+    Resumption PSK: 
+63783ABA445605C90D7D97DDF503B652C300C1FF16F21B6B3331621EC7557F6E0276B88E296F0E7D366111C3CE306944
+    PSK identity: None
+    PSK identity hint: None
+    SRP username: None
+    TLS session ticket lifetime hint: 300 (seconds)
+    TLS session ticket:
+    0000 - c2 03 99 47 4d 5d bf 6e-51 ac 79 7d d2 6a 57 5d   ...GM].nQ.y}.jW]
+    0010 - 37 bc 6d 44 33 bb d4 51-44 c5 34 58 fd bc dc 0a   7.mD3..QD.4X....
+    0020 - 3c 99 bf 6c 28 69 90 14-e7 3a bf 93 33 20 2c 32   <..l(i...:..3 ,2
+    0030 - 11 19 99 7e 50 0d 66 9d-28 4d f5 b4 bf 6e b8 81   ...~P.f.(M...n..
+    0040 - fa 4a c7 bf 4a 2e 9c ce-b7 57 de b9 dc e3 3f f5   .J..J....W....?.
+    0050 - b6 e8 52 2f 67 3b a8 a3-28 71 f6 96 13 0b 2a fb   ..R/g;..(q....*.
+    0060 - 61 12 8e 8e 58 b4 53 d7-a7 7c 49 39 1b fb 78 cf   a...X.S..|I9..x.
+    0070 - 23 c0 95 c1 f1 00 54 26-58 c5 a9 22 c0 10 d4 c9   #.....T&X.."....
+    0080 - 16 f9 b7 9d 90 2c b1 67-5b d3 c0 6d 97 29 09 11   .....,.g[..m.)..
+    0090 - 18 d2 68 b3 4e a0 94 2c-d2 05 7f 3b e7 f6 85 33   ..h.N..,...;...3
+    00a0 - e4 9a 1a 63 28 2c af fd-07 0d f7 e9 c2 cc 95 46   ...c(,.........F
+    00b0 - dd 1b 40 20 b0 6d d9 89-3d 59 54 51 6f a0 11 c3   ..@ .m..=YTQo...
+    00c0 - 53 68 09 c1 49 fd 2a ee-60 a8 6f a1 73 ec 83 0c   Sh..I.*.`.o.s...
+    00d0 - 2e 60 dd f3 50 a3 da 2e-f0 98 a2 ca 33 0b 85 c1   .`..P.......3...
+    00e0 - a6 3c 28 78 26 f6 51 86-86 d7 43 98 f8 5a 41 95   .<(x&.Q...C..ZA.
+
+    Start Time: 1720382226
+    Timeout   : 7200 (sec)
+    Verify return code: 26 (unsuitable certificate purpose)
+    Extended master secret: no
+    Max Early Data: 0
+---
+read R BLOCK
+closed
+
+Hello from the TLS client
+
+Connection to TLS server with PID 141804 terminated successfully
+
+Do you want to delete the server files? (y/n)
+Server files deleted
